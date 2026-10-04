@@ -3,6 +3,7 @@ import { Rich } from '../sr/Rich'
 import { s, useExerciseRun, ExerciseShell, Actions, wrongScript } from './shared'
 import { Audio } from '../content/Content'
 import { ttsUrl } from '../../lib/tts'
+import { playErrorText, playUrl } from '../../lib/player'
 import { useApp } from '../../store/app'
 import { pickGender, useExerciseScripts, useGender, useSr } from '../../store/hooks'
 import { checkAnswer, hintPrefix, type CheckResult } from '../../lib/answer'
@@ -246,12 +247,22 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
 
 /** Кнопка «послушать слово» в диктанте с озвучкой Google Переводчика. Само слово не показываем. */
 function PlayWord({ word, n }: { word: string; n: number }) {
-  const play = () => {
-    void new window.Audio(ttsUrl(word)).play().catch(() => {})
+  const [error, setError] = useState<string | null>(null)
+  const play = async () => {
+    setError(null)
+    const r = await playUrl(ttsUrl(word))
+    if (!r.ok && r.error !== 'stopped') setError(playErrorText(r.error))
   }
   return (
-    <button type="button" className={s.playWord} onClick={play} aria-label={`Послушать слово ${n}`}>
-      ▶
-    </button>
+    <>
+      <button type="button" className={s.playWord} onClick={() => void play()} aria-label={`Послушать слово ${n}`}>
+        ▶
+      </button>
+      {error && (
+        <span role="alert" className={s.playError}>
+          {error}
+        </span>
+      )}
+    </>
   )
 }

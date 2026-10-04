@@ -230,3 +230,10 @@
   color: inherit;
   cursor: pointer;
 }
+
+.playError {
+  display: block;
+  color: var(--bad);
+  font-size: 0.85em;
+  margin: 4px 0;
+}
