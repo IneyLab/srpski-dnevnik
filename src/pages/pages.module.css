@@ -390,3 +390,8 @@ a.weekCard:hover {
 .resList li {
   margin-bottom: 0.5em;
 }
+
+/* Нумерация заданий: своя в каждом занятии */
+.lesson {
+  counter-reset: task;
+}

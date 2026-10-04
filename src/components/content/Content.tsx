@@ -5,11 +5,42 @@ import { Icon } from '../Icon'
 import { useSr, useG, useScript } from '../../store/hooks'
 import type { Gendered } from '../../content/types'
 import { copyText } from '../../lib/clipboard'
+import { SOURCES, isSourceId } from '../../content/sources'
 
 export const audioUrl = (name: string) => `/audio/go-serbia/${name}.mp3`
 
-/** Аудио курса Go-Serbia. Грузится только при нажатии (preload="none"), есть замедление для «тени». */
-export function Audio({ src, title, note, words }: { src: string; title: string; note?: string; words?: string }) {
+/**
+ * Подпись источника внизу задания: мелко, серым, «(c) Go-Serbia» со ссылкой на урок.
+ * <Source id="goSerbia1" /> — источник из content/sources.ts; <Source name="…" href="…" /> — разовый.
+ */
+export function Source({ id, name, href }: { id?: string; name?: string; href?: string }) {
+  const ref = id && isSourceId(id) ? SOURCES[id] : name && href ? { name, url: href } : null
+  if (!ref) return null
+  return (
+    <p className={s.source}>
+      (c){' '}
+      <a href={ref.url} target="_blank" rel="noopener noreferrer">
+        {ref.name}
+      </a>
+    </p>
+  )
+}
+
+/** Аудио из public/audio/go-serbia. Грузится только при нажатии (preload="none"), есть замедление для «тени». */
+export function Audio({
+  src,
+  title,
+  note,
+  words,
+  source,
+}: {
+  src: string
+  title: string
+  note?: string
+  words?: string
+  /** Ключ из content/sources.ts — подпись внизу. */
+  source?: string
+}) {
   const ref = useRef<HTMLAudioElement>(null)
   const [rate, setRate] = useState(1)
   const setSpeed = (r: number) => {
@@ -37,6 +68,7 @@ export function Audio({ src, title, note, words }: { src: string; title: string;
           </button>
         ))}
       </div>
+      {source && <Source id={source} />}
     </div>
   )
 }
@@ -121,6 +153,13 @@ export function Dialogue({ lines }: { lines: [string, Gendered, string?][] }) {
   )
 }
 
+const CHAT_SKILL = {
+  reading: '📖 Чтение',
+  writing: '✍️ Письмо',
+  listening: '👂 Аудирование',
+  speaking: '🗣️ Говорение',
+} as const
+
 const CHAT = {
   report: { icon: 'report', label: 'Отчитайся преподавателю' },
   ai: { icon: 'ai', label: 'Практика с ИИ' },
@@ -136,11 +175,14 @@ export function ChatBlock({
   kind,
   title,
   template,
+  skill,
   children,
 }: {
   kind: keyof typeof CHAT
   title: string
   template?: string
+  /** Навык упражнения с ИИ: одно упражнение — один навык — один новый чат. */
+  skill?: keyof typeof CHAT_SKILL
   children?: ReactNode
 }) {
   const sr = useSr()
@@ -163,8 +205,11 @@ export function ChatBlock({
       <div className={s.chatHead}>
         <Icon name={c.icon} size={22} />
         <div>
-          <div className={s.chatKind}>💬 {c.label}</div>
-          <div>{title}</div>
+          <div className={s.chatKind}>
+            💬 {c.label}
+            {skill && <> · {CHAT_SKILL[skill]}</>}
+          </div>
+          <div className={s.chatTitle}>{title}</div>
         </div>
       </div>
       <div className={s.chatBody}>

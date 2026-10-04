@@ -3,7 +3,7 @@ import type { ComponentProps } from 'react'
 import { Link } from 'react-router-dom'
 import type { MDXComponents } from 'mdx/types'
 import { Sr, G } from './sr/Sr'
-import { Audio, Video, Callout, MiniLesson, Trap, Culture, Tip, Dialogue, ChatBlock, Ext, Ru } from './content/Content'
+import { Audio, Video, Callout, MiniLesson, Trap, Culture, Tip, Dialogue, ChatBlock, Ext, Ru, Source } from './content/Content'
 import { Vocab } from './content/Vocab'
 import { AlphabetTable, NewLetters } from './content/Alphabet'
 import { Exercise } from './exercises/Exercise'
@@ -40,6 +40,7 @@ export const mdxComponents: MDXComponents = {
   ChatBlock,
   Ext,
   Ru,
+  Source,
   Vocab,
   AlphabetTable,
   NewLetters,

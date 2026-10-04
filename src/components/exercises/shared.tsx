@@ -5,6 +5,7 @@ import { pickGender, useExerciseScripts, useGender, useSr } from '../../store/ho
 import { hasCyrillic, type Script } from '../../lib/translit'
 import type { Exercise, Gendered } from '../../content/types'
 import { Rich } from '../sr/Rich'
+import { Source } from '../content/Content'
 
 export { s }
 
@@ -72,6 +73,7 @@ export function ExerciseShell({
         <Rich text={ex.instruction} />
       </p>
       {children}
+      {ex.source && <Source id={ex.source} />}
     </section>
   )
 }

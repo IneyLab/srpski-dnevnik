@@ -6,6 +6,7 @@ import { EXERCISES, WEEKS, courseProgress, weekProgress, nextLessonPath } from '
 import { pickGender } from '../store/hooks'
 import { tokensOf } from '../components/exercises/Build'
 import { normalize } from '../lib/answer'
+import { SOURCES } from './sources'
 
 const root = join(__dirname, '..', '..')
 const weeksDir = join(__dirname, 'weeks')
@@ -77,6 +78,41 @@ describe('содержание недель', () => {
   it('упражнения на перевод алфавитов записаны кириллицей', () => {
     for (const ex of Object.values(EXERCISES)) {
       if (ex.type === 'script') for (const it of ex.items) expect(/[a-z]/i.test(it), `${ex.id}: ${it}`).toBe(false)
+    }
+  })
+})
+
+describe('источники и практика с ИИ', () => {
+  it('каждый source ссылается на источник из sources.ts', () => {
+    for (const file of mdxFiles) {
+      for (const m of readFileSync(file, 'utf8').matchAll(/<(?:Source id|Audio[^>]*\bsource)="([^"]+)"/g)) {
+        expect(SOURCES, `${file}: ${m[1]}`).toHaveProperty(m[1])
+      }
+    }
+  })
+
+  it('источник не пишется в заголовках и тексте заданий (только подпись внизу)', () => {
+    // «Go-Serbia, задание 6» и номера заданий чужого сайта — в подпись <Source>, а не в текст
+    const bad = /Go-Serbia,\s*(урок|задани)|задани[еяю]\s*\d/i
+    for (const file of mdxFiles) {
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .forEach((line, i) => expect(bad.test(line), `${file}:${i + 1}: ${line}`).toBe(false))
+    }
+    for (const ex of Object.values(EXERCISES)) {
+      expect(bad.test(ex.title) || bad.test(ex.instruction), ex.id).toBe(false)
+    }
+  })
+
+  it('у каждого упражнения с ИИ указан навык, и занятие с практикой с ИИ покрывает все четыре навыка', () => {
+    for (const file of mdxFiles) {
+      const chats = [...readFileSync(file, 'utf8').matchAll(/<ChatBlock kind="ai"([^>]*?)title=/g)]
+      const skills = chats.map((m) => /skill="(\w+)"/.exec(m[1])?.[1])
+      for (const sk of skills) expect(sk, `${file}: ChatBlock kind="ai" без skill`).toBeDefined()
+      // Одиночный чат (например, говорение в продукте недели) допустим; набор из 2+ — полная практика.
+      if (chats.length >= 2) {
+        for (const need of ['reading', 'writing', 'listening', 'speaking']) expect(skills, `${file}: нет ${need}`).toContain(need)
+      }
     }
   })
 })

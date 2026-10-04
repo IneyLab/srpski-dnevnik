@@ -305,3 +305,25 @@
   color: var(--ok);
   font-size: 0.9em;
 }
+
+/* Подпись источника внизу задания: почти незаметная */
+.source {
+  flex-basis: 100%;
+  margin: 6px 0 0;
+  font-size: 0.75em;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  text-align: right;
+}
+.source a {
+  color: inherit;
+}
+
+/* Упражнения с ИИ — тоже задания: общая нумерация с упражнениями занятия */
+.chat.ai {
+  counter-increment: task;
+}
+.chat.ai .chatTitle::before {
+  content: 'Задание ' counter(task) '. ';
+}

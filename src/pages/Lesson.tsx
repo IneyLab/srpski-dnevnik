@@ -53,7 +53,7 @@ export default function Lesson() {
   const id = lessonId(n, slug)
 
   return (
-    <article>
+    <article className={s.lesson}>
       <header className={s.lessonHead}>
         <p className={s.crumbs}>
           <Link to="/">Курс</Link> / <Link to={`/week/${n}`}>Неделя {n}</Link> / {meta.code}

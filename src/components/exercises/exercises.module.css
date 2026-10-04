@@ -1,4 +1,6 @@
 .card {
+  /* Задания нумеруются в рамках занятия (счётчик сбрасывается в .lesson, pages.module.css) */
+  counter-increment: task;
   margin: 1.5em 0;
   padding: 16px 18px 18px;
   background: var(--card);
@@ -18,6 +20,9 @@
   font-family: var(--font-head);
   font-size: 1.1rem;
   margin: 0;
+}
+.title::before {
+  content: 'Задание ' counter(task) '. ';
 }
 .badge {
   font-size: 0.8em;

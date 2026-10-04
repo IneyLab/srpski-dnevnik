@@ -28,7 +28,7 @@ const week: WeekMeta = {
       kind: 'input',
       minutes: '40–60',
       skill: 'reading',
-      summary: 'Go-Serbia, урок 1: азбука, латиница, звуки',
+      summary: 'Азбука и латиница, произношение, чтение вслух + практика с ИИ',
     },
     {
       slug: '2',
@@ -37,7 +37,7 @@ const week: WeekMeta = {
       kind: 'practice',
       minutes: '40–60',
       skill: 'grammar',
-      summary: 'Go-Serbia, урок 1: род, `ово/то је` + мини-урок «`Зовем се, ја сам`»',
+      summary: 'Род, `ово/то је` + мини-урок «`Зовем се, ја сам`»',
     },
     {
       slug: '3',
@@ -46,7 +46,7 @@ const week: WeekMeta = {
       kind: 'task',
       minutes: '30–45',
       skill: 'speaking',
-      summary: 'Ролевая игра с ИИ: регистрация в гильдии путешественников',
+      summary: 'Таверна Гильдии путешественников: чтение, аудирование, письмо и говорение с ИИ',
     },
     {
       slug: '4',
@@ -55,7 +55,7 @@ const week: WeekMeta = {
       kind: 'listening',
       minutes: '30–45',
       skill: 'listening',
-      summary: 'Диктант, звонкие согласные, shadowing, культура',
+      summary: 'Носители на слух, shadowing, Вук Караджич + практика с ИИ',
     },
     {
       slug: '5',

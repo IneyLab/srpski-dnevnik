@@ -1,4 +1,5 @@
 import type { Skill } from '../lib/xp'
+import type { SourceId } from './sources'
 
 /** Текст, который зависит от рода ученика. Строка — одинаково для обоих. */
 export type Gendered = string | { f: string; m: string }
@@ -56,6 +57,8 @@ interface ExerciseBase {
   rule?: string
   /** Показывать сербский текст как записан, без переключения алфавита (упражнения на сами буквы). */
   fixedScript?: boolean
+  /** Откуда взято задание: подпись «(c) …» внизу карточки. Своё задание — без source. */
+  source?: SourceId
 }
 
 export interface ChoiceItem {
