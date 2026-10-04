@@ -6,3 +6,6 @@ dev-dist
 *.local
 coverage
 .claude
+
+# Аудио собирается из audio-src/ скриптом scripts/join-audio.mjs
+public/audio/
