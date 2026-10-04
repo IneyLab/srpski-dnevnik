@@ -1,0 +1,392 @@
+.hero {
+  position: relative;
+  padding: 20px 0 8px;
+}
+.kicker {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  font-weight: 600;
+  margin: 0;
+}
+.lead {
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+.progressCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin: 20px 0 8px;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.progressInfo {
+  flex: 1 1 220px;
+}
+.bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-deep);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.barFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.3s;
+}
+
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.howto li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 0.95em;
+}
+.howto strong {
+  display: block;
+  font-family: var(--font-head);
+}
+
+/* Оглавление-маршрут */
+.month {
+  margin-top: 2em;
+}
+.monthTitle {
+  margin: 0 0 4px;
+}
+.monthSub {
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+.route {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 22px;
+  position: relative;
+}
+.route::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 12px;
+  bottom: 12px;
+  border-left: 2px dashed var(--line);
+}
+.stop {
+  position: relative;
+  margin: 0 0 10px;
+}
+.stop::before {
+  content: '';
+  position: absolute;
+  left: -19px;
+  top: 22px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--ink-soft);
+}
+.stopDone::before {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.stopActive::before {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.weekCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+a.weekCard:hover {
+  border-color: var(--ink-soft);
+  box-shadow: var(--shadow);
+}
+.weekSoon {
+  background: transparent;
+  border-style: dashed;
+  color: var(--ink-soft);
+}
+.weekNum {
+  flex: none;
+  width: 44px;
+  text-align: center;
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+  line-height: 1;
+}
+.weekNum small {
+  display: block;
+  font-size: 0.6rem;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.weekBody {
+  flex: 1;
+  min-width: 0;
+}
+.weekTitle {
+  font-weight: 600;
+  margin: 0;
+}
+.weekTopics {
+  font-size: 0.9em;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Штампы статусов */
+.stamp {
+  flex: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border: 2px solid currentColor;
+  border-radius: 6px;
+  transform: rotate(-4deg);
+  white-space: nowrap;
+}
+.stamp-done {
+  color: var(--ok);
+}
+.stamp-active {
+  color: var(--accent-ink);
+}
+.stamp-todo {
+  color: var(--ink-soft);
+  border-style: dashed;
+}
+.stamp-soon {
+  color: var(--ink-soft);
+  border-style: dotted;
+  transform: none;
+}
+.checkpointCard {
+  composes: weekCard;
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+/* Страница недели */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 1em 0;
+}
+.fact {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.fact h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+.fact ul {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.95em;
+}
+.goals {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+.goals h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+}
+.goals ul {
+  margin: 0;
+}
+
+.lessonList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1em;
+  display: grid;
+  gap: 8px;
+}
+.lessonCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+.lessonCard:hover {
+  border-color: var(--ink-soft);
+}
+.lessonCode {
+  flex: none;
+  min-width: 48px;
+  padding: 4px 6px;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 8px;
+  background: var(--bg-deep);
+  font-size: 0.9em;
+}
+.lessonMeta {
+  font-size: 0.88em;
+  color: var(--ink-soft);
+}
+.check {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: transparent;
+}
+.checkOn {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: var(--bg);
+}
+
+/* Страница занятия */
+.crumbs {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.crumbs a {
+  color: var(--ink-soft);
+}
+.lessonHead {
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+}
+.lessonSummary {
+  color: var(--ink-soft);
+  margin: 0;
+}
+.doneBox {
+  margin-top: 2.5em;
+  padding: 18px;
+  border-radius: var(--radius);
+  border: 2px dashed var(--line);
+  text-align: center;
+  background: var(--card);
+}
+.doneBox p {
+  margin: 0 0 10px;
+}
+.doneOn {
+  border-style: solid;
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+
+/* Настройки */
+.settingsGroup {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 4px 18px;
+  margin: 0 0 16px;
+}
+.setting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.setting:first-child {
+  border-top: 0;
+}
+.settingText {
+  flex: 1 1 260px;
+}
+.settingText small {
+  display: block;
+  color: var(--ink-soft);
+}
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+.segmented button {
+  border: 0;
+  background: transparent;
+  padding: 8px 14px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.segmented button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--bg);
+}
+.switch {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+.msg {
+  margin: 8px 0 0;
+  font-size: 0.95em;
+}
+.msgOk {
+  color: var(--ok);
+}
+.msgBad {
+  color: var(--bad);
+}
+
+.resList {
+  padding-left: 1.2em;
+}
+.resList li {
+  margin-bottom: 0.5em;
+}

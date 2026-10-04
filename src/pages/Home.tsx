@@ -1,0 +1,135 @@
+import { Link } from 'react-router-dom'
+import s from './pages.module.css'
+import { useApp } from '../store/app'
+import { useG } from '../store/hooks'
+import { COURSE, MONTHS } from '../content/course'
+import { WEEKS, courseProgress, lessonId, nextLessonPath, weekProgress, type WeekStatus } from '../content/registry'
+import { Sr } from '../components/sr/Sr'
+import { Icon } from '../components/Icon'
+import { Rich } from '../components/sr/Rich'
+
+const STAMP: Record<WeekStatus, string> = { soon: 'скоро', todo: 'не начата', active: 'в процессе', done: 'пройдена' }
+
+export function Stamp({ status }: { status: WeekStatus }) {
+  return <span className={`${s.stamp} ${s[`stamp-${status}`]}`}>{STAMP[status]}</span>
+}
+
+export default function Home() {
+  const lessons = useApp((st) => st.lessons)
+  const lastVisited = useApp((st) => st.lastVisited)
+  const g = useG()
+  const percent = courseProgress(lessons)
+  const next = nextLessonPath(lessons)
+  // Последнее открытое занятие, если оно ещё не выполнено, иначе первое невыполненное
+  const m = lastVisited?.path.match(/^\/week\/(\d+)\/lesson\/(\w+)$/)
+  const lastOpen = m && !lessons[lessonId(Number(m[1]), m[2])]?.done ? lastVisited!.path : null
+  const continuePath = lastOpen ?? next
+  const started = Object.values(lessons).some((l) => l.done) || Boolean(lastVisited)
+
+  return (
+    <>
+      <section className={s.hero}>
+        <p className={s.kicker}>Сербский с нуля · 13 недель</p>
+        <h1>
+          <Sr>Здраво, Србијо!</Sr> Учебник сербского для русскоязычных
+        </h1>
+        <p className={s.lead}>
+          За три месяца — от алфавита до уровня A1 уверенно с выходом на A2: читать и писать на обоих алфавитах, поговорить
+          5 минут с носителем о себе и своих интересах, справиться в кафе, магазине и транспорте, понимать медленную речь.
+        </p>
+      </section>
+
+      <div className={s.progressCard}>
+        <div className={s.progressInfo}>
+          <strong>Пройдено {percent}% курса</strong>
+          <div className={s.bar} role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Прогресс курса">
+            <div className={s.barFill} style={{ width: `${percent}%` }} />
+          </div>
+        </div>
+        {continuePath && (
+          <Link to={continuePath} className="btn btn-primary">
+            {started ? g('Продолжить с места, где остановилась', 'Продолжить с места, где остановился') : 'Начать с первого занятия'}
+            <Icon name="right" size={18} />
+          </Link>
+        )}
+      </div>
+
+      <h2>Как пользоваться учебником</h2>
+      <ul className={s.howto}>
+        <li>
+          <strong>Одно занятие в день</strong>
+          30–60 минут, 5–6 дней в неделю. Каждая неделя: С1–С6 и чек-ин.
+        </li>
+        <li>
+          <strong>Сначала задача</strong>
+          Неделя ведёт к реальной задаче: представиться, объяснить правила игры, найти дорогу. Грамматика — инструмент.
+        </li>
+        <li>
+          <strong>💬 Вернись к преподавателю</strong>
+          Синие, фиолетовые и зелёные блоки: отчёт, практика с ИИ-чатом, практика с людьми. Шаблоны копируются кнопкой.
+        </li>
+        <li>
+          <strong>Ћ / Ć вверху</strong>
+          Переключает весь сербский текст между кириллицей и латиницей. Прогресс хранится в браузере, перенос — в настройках.
+        </li>
+      </ul>
+
+      <h2>Оглавление</h2>
+      {MONTHS.map((m) => (
+        <section key={m.n} className={s.month} aria-labelledby={`month-${m.n}`}>
+          <h3 className={s.monthTitle} id={`month-${m.n}`}>
+            Месяц {m.n}. «<Sr>{m.title}</Sr>»
+          </h3>
+          <p className={s.monthSub}>{m.subtitle}</p>
+          <ol className={s.route}>
+            {COURSE.filter((w) => w.month === m.n).map((w) => {
+              const p = weekProgress(w.n, lessons)
+              const available = Boolean(WEEKS[w.n])
+              const stopCls = p.status === 'done' ? s.stopDone : p.status === 'active' ? s.stopActive : ''
+              const inner = (
+                <>
+                  <span className={s.weekNum}>
+                    <small>неделя</small>
+                    {w.n}
+                  </span>
+                  <span className={s.weekBody}>
+                    <p className={s.weekTitle}>{w.title}</p>
+                    <p className={s.weekTopics}>
+                      <Rich text={w.topics} />
+                      {available && ` · ${p.done}/${p.total}`}
+                    </p>
+                  </span>
+                  <Stamp status={p.status} />
+                </>
+              )
+              return (
+                <li key={w.n} className={`${s.stop} ${stopCls}`}>
+                  {available ? (
+                    <Link to={`/week/${w.n}`} className={s.weekCard}>
+                      {inner}
+                    </Link>
+                  ) : (
+                    <div className={`${s.weekCard} ${s.weekSoon}`}>{inner}</div>
+                  )}
+                  {w.checkpoint && (
+                    <Link to={`/checkpoint/${w.checkpoint}`} className={s.checkpointCard} style={{ marginTop: 8 }}>
+                      <span className={s.weekNum} aria-hidden="true">
+                        📊
+                      </span>
+                      <span className={s.weekBody}>
+                        <p className={s.weekTitle}>
+                          {w.checkpoint === 3 ? 'Итоговая оценка' : `Контрольная точка ${w.checkpoint}`}
+                        </p>
+                        <p className={s.weekTopics}>4 навыка + чек-лист «Я могу…» по CEFR</p>
+                      </span>
+                    </Link>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
+        </section>
+      ))}
+    </>
+  )
+}

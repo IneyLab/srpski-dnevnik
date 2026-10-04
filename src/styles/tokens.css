@@ -1,0 +1,87 @@
+/* «Дневник путешественника»: светлая тема — бумага и чернила, тёмная — ночная карта. */
+:root {
+  color-scheme: light;
+  --bg: #f6f1e7;
+  --bg-deep: #ede5d4;
+  --card: #fffdf8;
+  --ink: #2b2420;
+  --ink-soft: #5f554c;
+  --line: #ddd2bf;
+  --accent: #c6363c;
+  --accent-ink: #a8282e;
+  --accent-soft: #f7dcdb;
+  --blue: #1f4e8c;
+  --blue-soft: #dde7f4;
+  --violet: #6a3fa0;
+  --violet-soft: #ebe2f6;
+  --green: #2e6b3f;
+  --green-soft: #dcefdf;
+  --amber: #8a5a00;
+  --amber-soft: #f6e8c8;
+  --ok: #2e6b3f;
+  --ok-soft: #dcefdf;
+  --bad: #a8282e;
+  --bad-soft: #f7dcdb;
+  --focus: #1f4e8c;
+  --shadow: 0 1px 2px rgb(60 40 20 / 8%), 0 4px 14px rgb(60 40 20 / 6%);
+  --radius: 12px;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-head: 'PT Serif', Georgia, 'Times New Roman', serif;
+  --maxw: 760px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #141c26;
+  --bg-deep: #0f161e;
+  --card: #1c2632;
+  --ink: #ebe5d8;
+  --ink-soft: #a9b1bc;
+  --line: #2f3c4b;
+  --accent: #ff7b7f;
+  --accent-ink: #ff8f92;
+  --accent-soft: #3d2328;
+  --blue: #8db8f0;
+  --blue-soft: #1d2f47;
+  --violet: #c4a6f0;
+  --violet-soft: #2e2442;
+  --green: #8fd4a0;
+  --green-soft: #1b3325;
+  --amber: #f0c470;
+  --amber-soft: #3a2f17;
+  --ok: #8fd4a0;
+  --ok-soft: #1b3325;
+  --bad: #ff8f92;
+  --bad-soft: #3d2328;
+  --focus: #8db8f0;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 14px rgb(0 0 0 / 25%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #141c26;
+    --bg-deep: #0f161e;
+    --card: #1c2632;
+    --ink: #ebe5d8;
+    --ink-soft: #a9b1bc;
+    --line: #2f3c4b;
+    --accent: #ff7b7f;
+    --accent-ink: #ff8f92;
+    --accent-soft: #3d2328;
+    --blue: #8db8f0;
+    --blue-soft: #1d2f47;
+    --violet: #c4a6f0;
+    --violet-soft: #2e2442;
+    --green: #8fd4a0;
+    --green-soft: #1b3325;
+    --amber: #f0c470;
+    --amber-soft: #3a2f17;
+    --ok: #8fd4a0;
+    --ok-soft: #1b3325;
+    --bad: #ff8f92;
+    --bad-soft: #3d2328;
+    --focus: #8db8f0;
+    --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 14px rgb(0 0 0 / 25%);
+  }
+}
