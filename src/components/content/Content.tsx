@@ -11,17 +11,23 @@ export const audioUrl = (name: string) => `/audio/go-serbia/${name}.mp3`
 
 /**
  * Подпись источника внизу задания: мелко, серым, «(c) Go-Serbia» со ссылкой на урок.
- * <Source id="goSerbia1" /> — источник из content/sources.ts; <Source name="…" href="…" /> — разовый.
+ * <Source id="goSerbia1" /> — источник из content/sources.ts; <Source name="…" href="…" /> — разовый;
+ * voice — источник озвучки: «(c) Go-Serbia · озвучка: Google Переводчик».
  */
-export function Source({ id, name, href }: { id?: string; name?: string; href?: string }) {
+export function Source({ id, name, href, voice }: { id?: string; name?: string; href?: string; voice?: string }) {
   const ref = id && isSourceId(id) ? SOURCES[id] : name && href ? { name, url: href } : null
-  if (!ref) return null
+  const v = voice && isSourceId(voice) ? SOURCES[voice] : null
+  if (!ref && !v) return null
+  const link = (r: { name: string; url: string }) => (
+    <a href={r.url} target="_blank" rel="noopener noreferrer">
+      {r.name}
+    </a>
+  )
   return (
     <p className={s.source}>
-      (c){' '}
-      <a href={ref.url} target="_blank" rel="noopener noreferrer">
-        {ref.name}
-      </a>
+      (c) {ref && link(ref)}
+      {ref && v && ' · '}
+      {v && <>озвучка: {link(v)}</>}
     </p>
   )
 }
@@ -74,14 +80,14 @@ export function Audio({
 }
 
 /** YouTube через youtube-nocookie. Плеер загружается только по нажатию. */
-export function Video({ id, title, author }: { id: string; title: string; author?: string }) {
+export function Video({ id, title, author, start }: { id: string; title: string; author?: string; /** С какой секунды начинать. */ start?: number }) {
   const [on, setOn] = useState(false)
   return (
     <figure className={s.video} style={{ margin: '0 0 1em' }}>
       <div className={s.videoFrame}>
         {on ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
+            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0${start ? `&start=${start}` : ''}`}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -98,7 +104,7 @@ export function Video({ id, title, author }: { id: string; title: string; author
       </div>
       <figcaption className={s.videoCaption}>
         {author && <>{author} · </>}
-        <a href={`https://www.youtube.com/watch?v=${id}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://www.youtube.com/watch?v=${id}${start ? `&t=${start}s` : ''}`} target="_blank" rel="noopener noreferrer">
           Открыть на YouTube ↗
         </a>
       </figcaption>

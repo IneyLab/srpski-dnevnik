@@ -10,6 +10,8 @@ export interface SourceRef {
 
 export const SOURCES = {
   goSerbia1: { name: 'Go-Serbia', url: 'https://lang.go-serbia.net/page/urok-1-2.htm' },
+  // Озвучка слов: сербский голос Google Переводчика (scripts/tts.mjs)
+  googleTts: { name: 'Google Переводчик', url: 'https://translate.google.com/?sl=sr&tl=ru' },
 } satisfies Record<string, SourceRef>
 
 export type SourceId = keyof typeof SOURCES

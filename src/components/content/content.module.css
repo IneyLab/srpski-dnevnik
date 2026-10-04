@@ -327,3 +327,60 @@
 .chat.ai .chatTitle::before {
   content: 'Задание ' counter(task) '. ';
 }
+
+/* «Повтори за диктором» */
+.repeat {
+  padding: 12px 14px 10px;
+  margin: 0 0 1em;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.repeatHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.repeatWords {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 0 0 10px;
+}
+.repeatWord {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  padding: 4px 12px;
+  min-height: 36px;
+  font: inherit;
+  cursor: pointer;
+}
+.repeatWord span {
+  font-size: 0.7em;
+  color: var(--ink-soft);
+}
+.repeatWord[data-state='listen'] {
+  background: var(--violet-soft);
+  border-color: var(--violet);
+}
+.repeatWord[data-state='repeat'] {
+  background: var(--green-soft);
+  border-color: var(--green);
+  font-weight: 600;
+}
+.repeatControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.repeatStatus {
+  font-weight: 600;
+}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Rich } from '../sr/Rich'
 import { s, useExerciseRun, ExerciseShell, Actions, wrongScript } from './shared'
 import { Audio } from '../content/Content'
+import { ttsUrl } from '../../lib/tts'
 import { useApp } from '../../store/app'
 import { pickGender, useExerciseScripts, useGender, useSr } from '../../store/hooks'
 import { checkAnswer, hintPrefix, type CheckResult } from '../../lib/answer'
@@ -168,10 +169,11 @@ export function Dictation({ ex }: { ex: DictationExercise }) {
 
   return (
     <ExerciseShell ex={ex} done={done}>
-      <Audio src={ex.audio} title="Слушай и записывай" note="Замедли до 0.75×, если нужно. Пиши на любом алфавите." />
+      {ex.audio && <Audio src={ex.audio} title="Слушай и записывай" note="Замедли до 0.75×, если нужно. Пиши на любом алфавите." />}
       <ol className={s.items}>
         {ex.items.map((it, i) => (
           <li key={i} className={s.item}>
+            {ex.tts && <PlayWord word={it.answer} n={i + 1} />}
             {it.ru && <span>{it.ru}: </span>}
             <input
               className={inputClass(t.verdicts[i])}
@@ -239,5 +241,17 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
         score="Исправь отмеченные строки. Диакритика здесь обязательна."
       />
     </ExerciseShell>
+  )
+}
+
+/** Кнопка «послушать слово» в диктанте с озвучкой Google Переводчика. Само слово не показываем. */
+function PlayWord({ word, n }: { word: string; n: number }) {
+  const play = () => {
+    void new window.Audio(ttsUrl(word)).play().catch(() => {})
+  }
+  return (
+    <button type="button" className={s.playWord} onClick={play} aria-label={`Послушать слово ${n}`}>
+      ▶
+    </button>
   )
 }

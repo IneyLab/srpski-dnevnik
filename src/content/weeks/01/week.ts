@@ -55,7 +55,7 @@ const week: WeekMeta = {
       kind: 'listening',
       minutes: '30–45',
       skill: 'listening',
-      summary: 'Носители на слух, shadowing, Вук Караджич + практика с ИИ',
+      summary: 'Диктант, shadowing, живая речь, Вук Караджич + практика с ИИ',
     },
     {
       slug: '5',

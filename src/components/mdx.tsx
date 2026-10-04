@@ -5,6 +5,7 @@ import type { MDXComponents } from 'mdx/types'
 import { Sr, G } from './sr/Sr'
 import { Audio, Video, Callout, MiniLesson, Trap, Culture, Tip, Dialogue, ChatBlock, Ext, Ru, Source } from './content/Content'
 import { Vocab } from './content/Vocab'
+import { RepeatAfter } from './content/RepeatAfter'
 import { AlphabetTable, NewLetters } from './content/Alphabet'
 import { Exercise } from './exercises/Exercise'
 
@@ -41,6 +42,7 @@ export const mdxComponents: MDXComponents = {
   Ext,
   Ru,
   Source,
+  RepeatAfter,
   Vocab,
   AlphabetTable,
   NewLetters,

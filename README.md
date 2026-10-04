@@ -42,8 +42,9 @@ src/
   components/       sr/ (сербский текст), content/ (аудио, видео, блоки), exercises/ (7 типов), layout/
   pages/            страницы по маршрутам
 audio-src/go-serbia/      аудио курса Go-Serbia кусками по 400 КБ + manifest.json (SHA-256)
+audio-src/google-tts/     озвучка слов Google Переводчиком (npm run tts)
 public/audio/go-serbia/   собранные mp3 (генерируются, в git не хранятся)
-scripts/                  split-audio.mjs / join-audio.mjs
+scripts/                  split-audio.mjs / join-audio.mjs / tts.mjs (озвучка Google Переводчика)
 ```
 
 ### Аудио
@@ -51,6 +52,8 @@ scripts/                  split-audio.mjs / join-audio.mjs
 Каждое аудио до использования в задании проверяет автор курса (`docs/media-review.md`): диктор должен произносить ровно то, что написано в задании.
 
 Из сети, где ведётся проект, большие файлы не загружаются на GitHub одним запросом, поэтому mp3 хранятся в `audio-src/` кусками до 400 КБ. Перед `dev`, `build` и `test` скрипт `scripts/join-audio.mjs` склеивает их в `public/audio/go-serbia/` и проверяет контрольные суммы (на Vercel тоже). Чтобы добавить аудио: положи mp3 в `public/audio/<папка>/` и запусти `npm run split-audio -- <папка>`.
+
+Озвучка слов для «Повтори за диктором» (`<RepeatAfter>`) и диктантов с `tts: true` — сербский голос Google Переводчика: `npm run tts` скачивает недостающие слова в `public/audio/google-tts/` (имя файла — `ttsSlug` из `src/lib/tts.ts`) и режет их в `audio-src/google-tts/`.
 
 ## Как добавить неделю
 
@@ -69,7 +72,7 @@ scripts/                  split-audio.mjs / join-audio.mjs
 - В строках данных (week.ts, инструкции упражнений) сербские фрагменты тоже отмечаются обратными кавычками.
 - Формы по роду ученика: в MDX `<G f="уморна" m="уморан" />` (сербский) и `<Ru f="сама" m="сам" />` (русский); в данных — `{ f: '…', m: '…' }`.
 - Шаблоны в `<ChatBlock template={…}>`: `[[женская|мужская]]`, `{{сербский текст}}`, `((если кириллица|если латиница))`.
-- Компоненты MDX: `Audio` (`source` — подпись источника), `Video` (youtube-nocookie, загрузка по клику, `author` — автор/канал), `Exercise`, `Vocab`, `ChatBlock` (report / ai / people; у `ai` обязателен `skill`: reading / writing / listening / speaking), `Source` (подпись «(c) …» внизу блока), `MiniLesson`, `Trap`, `Culture`, `Tip`, `Dialogue`, `AlphabetTable`, `NewLetters`.
+- Компоненты MDX: `Audio` (`source` — подпись источника), `Video` (youtube-nocookie, загрузка по клику, `author` — автор/канал), `Exercise`, `Vocab`, `ChatBlock` (report / ai / people; у `ai` обязателен `skill`: reading / writing / listening / speaking), `Source` (подпись «(c) …» внизу блока), `RepeatAfter` (повтори за диктором, озвучка Google Переводчика), `MiniLesson`, `Trap`, `Culture`, `Tip`, `Dialogue`, `AlphabetTable`, `NewLetters`.
 - Источник задания — только мелкой подписью внизу (`source` в упражнении, `<Source id>` в MDX), не в заголовке. Задания нумеруются автоматически в рамках занятия.
 - Каждую внешнюю ссылку и ID видео проверяем до вставки.
 

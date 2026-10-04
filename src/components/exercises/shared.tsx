@@ -53,6 +53,7 @@ export function ExerciseShell({
   showTraining?: boolean
 }) {
   const { training, show, answer } = useExerciseScripts()
+  const tts = ex.type === 'dictation' && ex.tts
   return (
     <section className={s.card} aria-labelledby={`ex-${ex.id}`}>
       <div className={s.head}>
@@ -73,7 +74,7 @@ export function ExerciseShell({
         <Rich text={ex.instruction} />
       </p>
       {children}
-      {ex.source && <Source id={ex.source} />}
+      {(ex.source || tts) && <Source id={ex.source} voice={tts ? 'googleTts' : undefined} />}
     </section>
   )
 }

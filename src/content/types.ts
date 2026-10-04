@@ -117,7 +117,9 @@ export interface ListenExercise extends ExerciseBase {
 
 export interface DictationExercise extends ExerciseBase {
   type: 'dictation'
-  audio: string
+  /** Одна запись со всеми словами (public/audio/…). Либо tts: у каждого слова своя кнопка, озвучка Google Переводчика. */
+  audio?: string
+  tts?: boolean
   /** Слова, которые нужно записать, по порядку (кириллица), с подсказкой. */
   items: { answer: string; ru?: string }[]
 }

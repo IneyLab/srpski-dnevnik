@@ -7,6 +7,7 @@ import { pickGender } from '../store/hooks'
 import { tokensOf } from '../components/exercises/Build'
 import { normalize } from '../lib/answer'
 import { SOURCES } from './sources'
+import { splitWords, ttsSlug, TTS_DIR } from '../lib/tts'
 
 const root = join(__dirname, '..', '..')
 const weeksDir = join(__dirname, 'weeks')
@@ -16,6 +17,7 @@ const mdxFiles = readdirSync(weeksDir).flatMap((w) =>
     .map((f) => join(weeksDir, w, f)),
 )
 const audioExists = (name: string) => existsSync(join(root, 'public', 'audio', 'go-serbia', `${name}.mp3`))
+const ttsExists = (word: string) => existsSync(join(root, 'public', 'audio', TTS_DIR, `${ttsSlug(word)}.mp3`))
 
 describe('содержание недель', () => {
   it('каждое <Exercise id> из MDX существует', () => {
@@ -35,7 +37,21 @@ describe('содержание недель', () => {
     for (const file of mdxFiles) {
       for (const m of readFileSync(file, 'utf8').matchAll(/<Audio src="([^"]+)"/g)) expect(audioExists(m[1]), `${file}: ${m[1]}`).toBe(true)
     }
-    for (const ex of Object.values(EXERCISES)) if ('audio' in ex) expect(audioExists(ex.audio), ex.id).toBe(true)
+    for (const ex of Object.values(EXERCISES)) if ('audio' in ex && ex.audio) expect(audioExists(ex.audio), ex.id).toBe(true)
+  })
+
+  it('озвучка Google Переводчика есть для всех слов (иначе: npm run tts)', () => {
+    for (const file of mdxFiles) {
+      for (const m of readFileSync(file, 'utf8').matchAll(/<RepeatAfter[^>]*?\swords="([^"]+)"/g)) {
+        for (const w of splitWords(m[1])) expect(ttsExists(w), `${file}: ${w}`).toBe(true)
+      }
+    }
+    for (const ex of Object.values(EXERCISES)) {
+      if (ex.type === 'dictation') {
+        expect(Boolean(ex.audio) !== Boolean(ex.tts), `${ex.id}: нужно либо audio, либо tts`).toBe(true)
+        if (ex.tts) for (const it of ex.items) expect(ttsExists(it.answer), `${ex.id}: ${it.answer}`).toBe(true)
+      }
+    }
   })
 
   it('у каждого занятия в week.ts есть MDX-файл', () => {
@@ -85,7 +101,7 @@ describe('содержание недель', () => {
 describe('источники и практика с ИИ', () => {
   it('каждый source ссылается на источник из sources.ts', () => {
     for (const file of mdxFiles) {
-      for (const m of readFileSync(file, 'utf8').matchAll(/<(?:Source id|Audio[^>]*\bsource)="([^"]+)"/g)) {
+      for (const m of readFileSync(file, 'utf8').matchAll(/<(?:Source id|(?:Audio|RepeatAfter)[^>]*\bsource)="([^"]+)"/g)) {
         expect(SOURCES, `${file}: ${m[1]}`).toHaveProperty(m[1])
       }
     }

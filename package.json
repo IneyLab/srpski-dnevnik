@@ -12,7 +12,8 @@
     "pretest": "node scripts/join-audio.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "split-audio": "node scripts/split-audio.mjs"
+    "split-audio": "node scripts/split-audio.mjs",
+    "tts": "node scripts/tts.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",
