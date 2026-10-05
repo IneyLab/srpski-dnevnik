@@ -125,9 +125,9 @@ export default function Week() {
         })}
       </ol>
 
-      <h2>Словарик недели</h2>
+      <h2>Словарь недели</h2>
       <p className={s.lessonMeta}>Ложные друзья отмечены: похожи на русские слова, но значат другое.</p>
-      <Vocab week={n} />
+      <Vocab week={n} title={false} />
 
       <nav aria-label="Соседние недели" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: '2.5em' }}>
         {prev ? (

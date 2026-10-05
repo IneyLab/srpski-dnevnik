@@ -219,7 +219,8 @@
 }
 .vocabRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
   gap: 4px 12px;
   padding: 8px 14px;
   border-top: 1px solid var(--line);
@@ -389,4 +390,38 @@
   flex-basis: 100%;
   color: var(--bad);
   font-size: 0.9em;
+}
+
+/* Кнопка ▶ «послушать слово» */
+.say {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--accent-ink);
+  font-size: 0.8em;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.say:hover {
+  border-color: var(--accent);
+}
+.say[data-playing] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.sayError {
+  display: block;
+  font-size: 0.8em;
+  color: var(--bad);
+}
+.exCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

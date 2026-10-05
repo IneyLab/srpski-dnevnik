@@ -43,3 +43,23 @@ describe('anyToLat', () => {
     expect(anyToLat('sam')).toBe('sam')
   })
 })
+
+import { fixLookalikes, foreignLetters } from './translit'
+
+describe('fixLookalikes', () => {
+  it('латинская j в кириллическом ответе становится ј', () => {
+    expect(fixLookalikes('Ово je мoj пасош.', 'cyr')).toBe('Ово је мој пасош.')
+    expect(fixLookalikes('Ово је моја торба.', 'cyr')).toBe('Ово је моја торба.')
+  })
+  it('чисто латинский ответ не трогает', () => {
+    expect(fixLookalikes('ovo je moj', 'cyr')).toBe('ovo je moj')
+  })
+  it('кириллические двойники в латинском ответе', () => {
+    expect(fixLookalikes('mајkа', 'lat')).toBe('majka')
+    expect(fixLookalikes('мама', 'lat')).toBe('мама')
+  })
+  it('чужие буквы для сообщения', () => {
+    expect(foreignLetters('Ово је мој пасош', 'cyr')).toEqual([])
+    expect(foreignLetters('Ово је мој pasoš', 'cyr')).toEqual(['p', 'a', 's', 'o', 'š'])
+  })
+})

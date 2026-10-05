@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Rich } from '../sr/Rich'
 import { s, useExerciseRun, ExerciseShell, Actions, wrongScript } from './shared'
 import { Audio } from '../content/Content'
@@ -7,10 +7,10 @@ import { playErrorText, playUrl } from '../../lib/player'
 import { useApp } from '../../store/app'
 import { pickGender, useExerciseScripts, useGender, useSr } from '../../store/hooks'
 import { checkAnswer, hintPrefix, type CheckResult } from '../../lib/answer'
-import { cyrToLat, hasCyrillic, toScript, type Script } from '../../lib/translit'
+import { cyrToLat, fixLookalikes, foreignLetters, hasCyrillic, toScript, type Script } from '../../lib/translit'
 import type { DictationExercise, FillExercise, ScriptExercise } from '../../content/types'
 
-type ItemVerdict = (CheckResult & { script?: false }) | { script: true } | null
+type ItemVerdict = (CheckResult & { script?: false }) | { script: true; letters: string[]; expected: Script } | null
 
 interface Target {
   answers: string[]
@@ -30,10 +30,16 @@ function useTextItems(count: number, targets: Target[], ex: Parameters<typeof us
   const okAt = (v: ItemVerdict) => v !== null && !v.script && v.accepted
   const allOk = verdicts.every(okAt)
 
+  const inputs = useRef<(HTMLInputElement | null)[]>([])
+  const lastFocused = useRef(0)
+
   const check = () => {
-    const next: ItemVerdict[] = values.map((val, i) => {
+    const next: ItemVerdict[] = values.map((raw, i) => {
       const t = targets[i]
-      if (t.requireScript && wrongScript(val, t.requireScript)) return { script: true }
+      // Латинская «j» вместо «ј» (на русской раскладке её нет) и другие буквы-двойники — не ошибка алфавита
+      const val = fixLookalikes(raw, t.requireScript ?? (hasCyrillic(raw) ? 'cyr' : 'lat'))
+      if (t.requireScript && wrongScript(val, t.requireScript))
+        return { script: true, letters: foreignLetters(val, t.requireScript), expected: t.requireScript }
       return guardCyrillic(val, checkAnswer(val, t.answers, t.strict))
     })
     setVerdicts(next)
@@ -51,7 +57,29 @@ function useTextItems(count: number, targets: Target[], ex: Parameters<typeof us
     setVerdicts(Array(count).fill(null))
     setRevealed(false)
   }
-  return { values, verdicts, checked, allOk, revealed, setRevealed, check, change, reset }
+  /** Вставить букву с экранной клавиатуры в поле, где последним стоял курсор. */
+  const insert = (ch: string) => {
+    const i = lastFocused.current
+    const el = inputs.current[i]
+    const v = values[i] ?? ''
+    const start = el?.selectionStart ?? v.length
+    const end = el?.selectionEnd ?? v.length
+    change(i, v.slice(0, start) + ch + v.slice(end))
+    requestAnimationFrame(() => {
+      el?.focus()
+      el?.setSelectionRange(start + ch.length, start + ch.length)
+    })
+  }
+  /** Свойства поля номер i: запоминаем элемент и поле, где последним стоял курсор. */
+  const bind = (i: number) => ({
+    ref: (el: HTMLInputElement | null) => {
+      inputs.current[i] = el
+    },
+    onFocus: () => {
+      lastFocused.current = i
+    },
+  })
+  return { values, verdicts, checked, allOk, revealed, setRevealed, check, change, reset, insert, bind }
 }
 
 const simple = (x: string) => x.toLowerCase().replace(/\s+/g, ' ').trim().replace(/[.!?,;:…]+$/u, '')
@@ -76,7 +104,19 @@ function inputClass(v: ItemVerdict): string {
 
 function Feedback({ v, value, answer, revealed, display }: { v: ItemVerdict; value: string; answer: string; revealed: boolean; display: (t: string) => string }) {
   if (!v) return revealed ? <span className={s.feedback}>Ответ: <span lang="sr">{display(answer)}</span></span> : null
-  if (v.script) return <span className={`${s.feedback} ${s.fbBad}`}>Ответ нужен на другом алфавите.</span>
+  if (v.script)
+    return (
+      <span className={`${s.feedback} ${s.fbBad}`}>
+        ✗ Нужна только {v.expected === 'cyr' ? 'кириллица' : 'латиница'}
+        {v.letters.length > 0 && <>, а в ответе есть буквы другого алфавита: {v.letters.join(', ')}</>}.
+        {revealed && (
+          <>
+            {' '}
+            Ответ: <span lang="sr">{display(answer)}</span>
+          </>
+        )}
+      </span>
+    )
   if (v.verdict === 'correct') return <span className={`${s.feedback} ${s.fbOk}`}>✓ Верно</span>
   const right = <span lang="sr">{display(v.closest)}</span>
   if (v.verdict === 'almost')
@@ -129,6 +169,7 @@ export function FillIn({ ex }: { ex: FillExercise }) {
                 value={t.values[i]}
                 onChange={(e) => t.change(i, e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && t.check()}
+                {...t.bind(i)}
                 aria-label={`Пропуск ${i + 1}`}
                 autoComplete="off"
                 autoCapitalize="off"
@@ -147,6 +188,7 @@ export function FillIn({ ex }: { ex: FillExercise }) {
           </li>
         ))}
       </ol>
+      {training && answer === 'cyr' && <CyrKeys onInsert={t.insert} />}
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -182,6 +224,7 @@ export function Dictation({ ex }: { ex: DictationExercise }) {
               value={t.values[i]}
               onChange={(e) => t.change(i, e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && t.check()}
+                {...t.bind(i)}
               aria-label={`Слово ${i + 1}${it.ru ? ` (${it.ru})` : ''}`}
               autoComplete="off"
               autoCapitalize="off"
@@ -191,6 +234,7 @@ export function Dictation({ ex }: { ex: DictationExercise }) {
           </li>
         ))}
       </ol>
+      {training && answer === 'cyr' && <CyrKeys onInsert={t.insert} />}
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -223,6 +267,7 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
               value={t.values[i]}
               onChange={(e) => t.change(i, e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && t.check()}
+                {...t.bind(i)}
               aria-label={`${ex.direction === 'toLat' ? 'Латиницей' : 'Кириллицей'}: пункт ${i + 1}`}
               autoComplete="off"
               autoCapitalize="off"
@@ -232,6 +277,7 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
           </li>
         ))}
       </ol>
+      {target === 'cyr' && <CyrKeys onInsert={t.insert} />}
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -242,6 +288,48 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
         score="Исправь отмеченные строки. Диакритика здесь обязательна."
       />
     </ExerciseShell>
+  )
+}
+
+/**
+ * Сербские буквы, которых нет на русской раскладке. Вставляются в поле, где стоял курсор.
+ * Латинскую «j» вместо «ј» проверка и так принимает, но лучше сразу писать правильную букву.
+ */
+const SERBIAN_CYR = ['ђ', 'ј', 'љ', 'њ', 'ћ', 'џ']
+
+function CyrKeys({ onInsert }: { onInsert: (ch: string) => void }) {
+  const [upper, setUpper] = useState(false)
+  return (
+    <div className={s.keys} role="group" aria-label="Сербские буквы">
+      <span className={s.keysLabel}>Нет на клавиатуре:</span>
+      {SERBIAN_CYR.map((ch) => {
+        const c = upper ? ch.toUpperCase() : ch
+        return (
+          <button
+            key={ch}
+            type="button"
+            className={s.key}
+            lang="sr"
+            // mousedown не отнимает фокус у поля ввода
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => onInsert(c)}
+            aria-label={`Вставить букву ${c}`}
+          >
+            {c}
+          </button>
+        )
+      })}
+      <button
+        type="button"
+        className={s.key}
+        aria-pressed={upper}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setUpper((u) => !u)}
+        aria-label="Заглавные буквы"
+      >
+        ⇧
+      </button>
+    </div>
   )
 }
 

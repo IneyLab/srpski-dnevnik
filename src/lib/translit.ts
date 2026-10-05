@@ -71,6 +71,35 @@ export function latToCyr(text: string): string {
   return out
 }
 
+// Буквы-двойники латиницы и кириллицы. На русской раскладке нет «ј», поэтому в кириллическом
+// ответе ученик пишет латинскую «j», которая выглядит так же. Похожая история с a/а, e/е, o/о и т. п.
+const LAT_LOOKALIKE_TO_CYR: Record<string, string> = {
+  a: 'а', e: 'е', o: 'о', p: 'р', c: 'с', x: 'х', j: 'ј',
+  A: 'А', B: 'В', E: 'Е', K: 'К', M: 'М', H: 'Н', O: 'О', P: 'Р', C: 'С', T: 'Т', X: 'Х', J: 'Ј',
+}
+const CYR_LOOKALIKE_TO_LAT: Record<string, string> = Object.fromEntries(
+  Object.entries(LAT_LOOKALIKE_TO_CYR).map(([lat, cyr]) => [cyr, lat]),
+)
+
+/**
+ * Заменяет буквы-двойники чужого алфавита на буквы нужного: «Ово je мoj» (латинские j, o) → «Ово је мој».
+ * Срабатывает только в смешанном ответе, где уже есть буквы нужного алфавита.
+ */
+export function fixLookalikes(text: string, target: Script): string {
+  if (target === 'cyr') {
+    if (!hasCyrillic(text)) return text
+    return text.replace(/[a-zA-Z]/g, (ch) => LAT_LOOKALIKE_TO_CYR[ch] ?? ch)
+  }
+  if (!/[a-zA-Zčćđšž]/.test(text)) return text
+  return text.replace(/[Ѐ-ӿ]/g, (ch) => CYR_LOOKALIKE_TO_LAT[ch] ?? ch)
+}
+
+/** Буквы чужого алфавита в ответе (для понятного сообщения об ошибке). */
+export function foreignLetters(text: string, target: Script): string[] {
+  const re = target === 'cyr' ? /[a-zA-ZčćđšžČĆĐŠŽ]/g : /[Ѐ-ӿ]/g
+  return [...new Set(text.match(re) ?? [])]
+}
+
 export type Script = 'cyr' | 'lat'
 
 export function toScript(cyrText: string, script: Script): string {

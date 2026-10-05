@@ -23,7 +23,16 @@ for (const w of readdirSync(weeksDir)) {
     const { default: list } = await import(pathToFileURL(ex).href)
     for (const e of list) if (e.type === 'dictation' && e.tts) e.items.forEach((it) => words.add(it.answer))
   }
+  // Словарь недели: у каждого слова кнопка ▶ (обе формы, если слово зависит от рода)
+  const vocab = join(weeksDir, w, 'vocab.ts')
+  if (existsSync(vocab)) {
+    const { default: list } = await import(pathToFileURL(vocab).href)
+    for (const v of list) (typeof v.sr === 'string' ? [v.sr] : [v.sr.f, v.sr.m]).forEach((x) => words.add(x))
+  }
 }
+// Примеры в таблице алфавита
+const { ALPHABET } = await import(pathToFileURL(join('src', 'content', 'alphabet.ts')).href)
+for (const l of ALPHABET) words.add(l.ex)
 
 const out = join('public', 'audio', TTS_DIR)
 mkdirSync(out, { recursive: true })

@@ -2,7 +2,8 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { EXERCISES, WEEKS, courseProgress, weekProgress, nextLessonPath } from './registry'
+import { EXERCISES, VOCAB, WEEKS, courseProgress, weekProgress, nextLessonPath } from './registry'
+import { ALPHABET } from './alphabet'
 import { pickGender } from '../store/hooks'
 import { tokensOf } from '../components/exercises/Build'
 import { normalize } from '../lib/answer'
@@ -52,6 +53,18 @@ describe('содержание недель', () => {
         if (ex.tts) for (const it of ex.items) expect(ttsExists(it.answer), `${ex.id}: ${it.answer}`).toBe(true)
       }
     }
+    // Кнопки ▶ в словаре (обе формы по роду) и в таблице алфавита
+    for (const [week, items] of Object.entries(VOCAB)) {
+      for (const v of items) {
+        for (const w of typeof v.sr === 'string' ? [v.sr] : [v.sr.f, v.sr.m]) expect(ttsExists(w), `словарь недели ${week}: ${w}`).toBe(true)
+      }
+    }
+    for (const l of ALPHABET) expect(ttsExists(l.ex), `алфавит: ${l.ex}`).toBe(true)
+  })
+
+  it('в занятии С1 недели 1 нет словаря: слова начинаются со С2', () => {
+    expect(readFileSync(join(weeksDir, '01', 's1.mdx'), 'utf8')).not.toContain('<Vocab')
+    expect(VOCAB[1].some((v) => v.lesson === 's1')).toBe(false)
   })
 
   it('у каждого занятия в week.ts есть MDX-файл', () => {

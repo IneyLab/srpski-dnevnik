@@ -1,6 +1,7 @@
 import s from './content.module.css'
 import { ALPHABET, NEW_LETTERS } from '../../content/alphabet'
 import { SrText } from '../sr/Sr'
+import { Say } from './Say'
 
 /** Полная таблица азбуки: обе записи сразу, поэтому переключатель алфавита на неё не влияет. */
 export function AlphabetTable() {
@@ -22,7 +23,12 @@ export function AlphabetTable() {
               <td lang="sr">{l.lat}</td>
               <td>{l.sound}</td>
               <td>
-                <SrText text={l.ex} /> — {l.exRu}
+                <span className={s.exCell}>
+                  <Say word={l.ex} />
+                  <span>
+                    <SrText text={l.ex} /> — {l.exRu}
+                  </span>
+                </span>
               </td>
             </tr>
           ))}
@@ -46,7 +52,7 @@ export function NewLetters() {
           </div>
           <div className={s.letterSound}>{l.sound}</div>
           <div className={s.letterEx}>
-            <SrText text={l.ex} /> — {l.exRu}
+            <Say word={l.ex} /> <SrText text={l.ex} /> — {l.exRu}
           </div>
           {l.tip && <p style={{ fontSize: '0.85em', margin: '6px 0 0', textAlign: 'left' }}>{l.tip}</p>}
         </div>
