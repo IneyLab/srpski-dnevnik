@@ -6,6 +6,10 @@ import Week from './pages/Week'
 import Lesson from './pages/Lesson'
 import Settings from './pages/Settings'
 import NotFound from './pages/NotFound'
+import Character from './pages/Character'
+import MapPage from './pages/MapPage'
+import Cards from './pages/Cards'
+import Mistakes from './pages/Mistakes'
 import { Cheatsheets, Checkpoint, Resources } from './pages/MdxPages'
 
 function ScrollToTop() {
@@ -29,6 +33,10 @@ export default function App() {
           <Route path="/cheatsheets" element={<Cheatsheets />} />
           <Route path="/cheatsheets/:slug" element={<Cheatsheets />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/character" element={<Character />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/cards" element={<Cards />} />
+          <Route path="/mistakes" element={<Mistakes />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

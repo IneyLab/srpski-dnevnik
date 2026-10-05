@@ -1,0 +1,623 @@
+/* Игровые инструменты: лист персонажа, карта, карточки, тетрадь ошибок. Стиль «Дневник путешественника». */
+
+.page h1 {
+  margin-bottom: 0.2em;
+}
+.intro {
+  color: var(--ink-soft);
+  margin-top: 0;
+}
+
+/* Бумажный лист с двойной рамкой */
+.sheet {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin: 16px 0;
+}
+.sheet::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed var(--line);
+  border-radius: calc(var(--radius) - 4px);
+  pointer-events: none;
+}
+.sheet > * {
+  position: relative;
+}
+.sheet h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+/* Шапка листа персонажа */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  align-items: center;
+}
+.avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+}
+.heroText {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.heroText h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.kicker {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  font-weight: 600;
+  margin: 0;
+}
+.levelLine {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+.levelLine strong {
+  color: var(--ink);
+}
+
+.bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-deep);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.barFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.3s;
+}
+
+/* Навыки */
+.skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skill {
+  min-width: 0;
+}
+.skillHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.skillHead span {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.skill .barFill {
+  background: var(--blue);
+}
+
+/* Значки */
+.badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.badge {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  height: 100%;
+}
+.badge:has(input:checked) {
+  border-style: solid;
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+.badge:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.badge input {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--amber);
+}
+.badgeIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+.badge:has(input:checked) .badgeIcon {
+  filter: none;
+  opacity: 1;
+}
+.badgeText {
+  min-width: 0;
+}
+.badgeText strong {
+  display: block;
+}
+.badgeText small {
+  display: block;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.badgeWeek {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Журнал и таблица опыта */
+.log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.log li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.log li:last-child {
+  border-bottom: 0;
+}
+.log li > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.xp {
+  flex: none;
+  font-weight: 700;
+  color: var(--ok);
+  white-space: nowrap;
+}
+.muted {
+  color: var(--ink-soft);
+}
+.small {
+  font-size: 0.85rem;
+}
+.tableWrap {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.table td:last-child,
+.table th:last-child {
+  white-space: nowrap;
+}
+
+/* Плитки на главной */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 100%;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+.tile:hover {
+  border-color: var(--ink-soft);
+}
+.tileIcon {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.tile small {
+  color: var(--ink-soft);
+}
+
+/* Карта */
+.mapLayout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 860px) {
+  .mapLayout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .placeCard {
+    position: sticky;
+    top: 72px;
+  }
+}
+.mapFigure {
+  margin: 0;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.map {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  margin: 0 auto;
+}
+.land {
+  fill: var(--amber-soft);
+  stroke: var(--amber);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.kosovo {
+  fill: var(--card);
+  opacity: 0.55;
+  stroke: none;
+}
+.kosovoLine {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
+}
+.river {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+.pin {
+  cursor: pointer;
+  outline: none;
+}
+.pin circle {
+  fill: var(--accent);
+  stroke: var(--card);
+  stroke-width: 3;
+}
+.pin.locked circle {
+  fill: var(--line);
+}
+.pin text.pinMark {
+  fill: #fff;
+  font-size: 19px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.pin.locked text.pinMark {
+  fill: var(--ink-soft);
+}
+.pin text.pinLabel {
+  fill: var(--ink);
+  font-size: 24px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--card);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.pin:hover circle,
+.pin.selected circle {
+  stroke: var(--ink);
+}
+.pin:focus-visible circle {
+  stroke: var(--focus);
+  stroke-width: 6;
+}
+.mapCaption {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+.placeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.placeBtn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  padding: 4px 12px;
+  min-height: 36px;
+  cursor: pointer;
+  font: inherit;
+}
+.placeBtn[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.placeBtn.lockedBtn {
+  color: var(--ink-soft);
+  border-style: dashed;
+}
+.placeCard h2 {
+  margin: 0;
+}
+.placeCard .tagline {
+  color: var(--ink-soft);
+  margin: 4px 0 12px;
+}
+.placeCard p {
+  margin: 0 0 0.7em;
+}
+.stampOpen {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border: 2px solid currentColor;
+  border-radius: 6px;
+  color: var(--ok);
+  transform: rotate(-3deg);
+  margin-bottom: 6px;
+}
+.stampLocked {
+  composes: stampOpen;
+  color: var(--ink-soft);
+  border-style: dashed;
+}
+
+/* Карточки */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+.stats li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 4px;
+}
+.stats strong {
+  display: block;
+  font-size: 1.3rem;
+}
+.stats small {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+.dirs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.dirs legend {
+  font-weight: 600;
+  margin-bottom: 4px;
+  padding: 0;
+}
+.dirs label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+}
+.flash {
+  text-align: center;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.flashMeta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.flashWord {
+  font-size: 1.8rem;
+  font-family: var(--font-head);
+  overflow-wrap: anywhere;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.flashBack {
+  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+.flashNote {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.grades {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+.grades button {
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 6px 4px;
+  gap: 0;
+}
+.grades small {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.again {
+  border-color: var(--bad) !important;
+}
+.easy {
+  border-color: var(--ok) !important;
+}
+.mistakeTag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--bad);
+  background: var(--bad-soft);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.wordList {
+  columns: 2 180px;
+  padding-left: 1.2em;
+}
+
+/* Тетрадь ошибок */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  margin: 12px 0;
+}
+.toolbar label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.toolbar select {
+  font: inherit;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  min-height: 36px;
+  max-width: 100%;
+}
+.mistakes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.mistake {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--bad);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.mistake.resolved {
+  border-left-color: var(--ok);
+  opacity: 0.8;
+}
+.mistakeHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.mistakeBody {
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+}
+.given {
+  color: var(--bad);
+  text-decoration: line-through;
+}
+.correct {
+  color: var(--ok);
+}
+.mistakeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+.mistakeActions label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+}
+.empty {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 24px 12px;
+}

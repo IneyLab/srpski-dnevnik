@@ -425,3 +425,18 @@
   align-items: center;
   gap: 8px;
 }
+
+/* Отметка «сделано» под блоком «Вернись к преподавателю» */
+.chatDone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--chat-color);
+}
+.chatDoneNote {
+  color: var(--ink-soft);
+  font-size: 0.9em;
+}

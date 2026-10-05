@@ -1,17 +1,76 @@
 import { Link } from 'react-router-dom'
 import s from './pages.module.css'
 import { useApp } from '../store/app'
-import { useG } from '../store/hooks'
 import { COURSE, MONTHS } from '../content/course'
 import { WEEKS, courseProgress, lessonId, nextLessonPath, weekProgress, type WeekStatus } from '../content/registry'
 import { Sr } from '../components/sr/Sr'
 import { Icon } from '../components/Icon'
 import { Rich } from '../components/sr/Rich'
+import g from './game.module.css'
+import { useG, useGender } from '../store/hooks'
+import { levelFromXp, totalXp } from '../lib/xp'
+import { PLACES } from '../content/places'
+import { isPlaceOpen } from '../lib/places'
+import { EXERCISES, VOCAB, requiredLessons } from '../content/registry'
+import { buildDeck, deckStats } from '../lib/deck'
+import { plural } from '../lib/plural'
 
 const STAMP: Record<WeekStatus, string> = { soon: 'скоро', todo: 'не начата', active: 'в процессе', done: 'пройдена' }
 
 export function Stamp({ status }: { status: WeekStatus }) {
   return <span className={`${s.stamp} ${s[`stamp-${status}`]}`}>{STAMP[status]}</span>
+}
+
+/** Плитки игровых инструментов: персонаж, карта, карточки, ошибки. */
+function GameTiles() {
+  const lessons = useApp((st) => st.lessons)
+  const ledger = useApp((st) => st.xpLedger)
+  const mistakes = useApp((st) => st.mistakes)
+  const srs = useApp((st) => st.srs)
+  const gender = useGender()
+  const g2 = useG()
+  const level = levelFromXp(totalXp(ledger)).level
+  const opened = PLACES.filter((p) => isPlaceOpen(p, lessons, requiredLessons)).length
+  const deck = buildDeck({ vocab: VOCAB, lessons, mistakes, exercises: EXERCISES, gender })
+  const due = deckStats(deck, srs)
+  const toReview = due.due + Math.min(due.fresh, 10)
+  const openMistakes = Object.values(mistakes).filter((m) => !m.resolved).length
+  return (
+    <ul className={g.tiles}>
+      <li>
+        <Link to="/character" className={g.tile}>
+          <span className={g.tileIcon} aria-hidden="true">🧭</span>
+          <strong>Лист персонажа</strong>
+          <small>
+            {g2('Путешественница', 'Путешественник')}, уровень {level}
+          </small>
+        </Link>
+      </li>
+      <li>
+        <Link to="/map" className={g.tile}>
+          <span className={g.tileIcon} aria-hidden="true">🗺️</span>
+          <strong>Карта Сербии</strong>
+          <small>
+            открыто {opened} из {PLACES.length} мест
+          </small>
+        </Link>
+      </li>
+      <li>
+        <Link to="/cards" className={g.tile}>
+          <span className={g.tileIcon} aria-hidden="true">🗂️</span>
+          <strong>Карточки слов</strong>
+          <small>{deck.length ? `сегодня ${toReview} ${plural(toReview, 'карточка', 'карточки', 'карточек')}` : 'колода пока пуста'}</small>
+        </Link>
+      </li>
+      <li>
+        <Link to="/mistakes" className={g.tile}>
+          <span className={g.tileIcon} aria-hidden="true">📓</span>
+          <strong>Тетрадь ошибок</strong>
+          <small>{openMistakes ? `${openMistakes} ${plural(openMistakes, 'открытая', 'открытые', 'открытых')}` : 'ошибок нет'}</small>
+        </Link>
+      </li>
+    </ul>
+  )
 }
 
 export default function Home() {
@@ -53,6 +112,9 @@ export default function Home() {
           </Link>
         )}
       </div>
+
+      <h2>Дневник путешественника</h2>
+      <GameTiles />
 
       <h2>Как пользоваться учебником</h2>
       <ul className={s.howto}>

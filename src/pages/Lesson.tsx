@@ -10,6 +10,7 @@ import { WEEKS, lessonId, lessonLoader } from '../content/registry'
 import type { Skill } from '../lib/xp'
 import NotFound from './NotFound'
 import { Rich } from '../components/sr/Rich'
+import { LessonContext } from '../components/content/LessonContext'
 
 function LessonDone({ id, skill }: { id: string; skill?: Skill }) {
   const done = useApp((st) => st.lessons[id]?.done ?? false)
@@ -25,6 +26,23 @@ function LessonDone({ id, skill }: { id: string; skill?: Skill }) {
   )
 }
 
+/** Переход по ссылке «#ex-…» (из тетради ошибок): прокрутить к упражнению, когда занятие загрузилось. */
+function ScrollToHash() {
+  const { hash } = useLocation()
+  useEffect(() => {
+    if (!hash) return
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)))
+    if (!el) return
+    const card = el.closest('section') ?? el
+    card.scrollIntoView({ block: 'start' })
+    if (card instanceof HTMLElement) {
+      card.setAttribute('tabindex', '-1')
+      card.focus({ preventScroll: true })
+    }
+  }, [hash])
+  return null
+}
+
 export default function Lesson() {
   const { n: nStr = '', s: slug = '' } = useParams()
   const n = Number(nStr)
@@ -35,6 +53,7 @@ export default function Lesson() {
   const Content = useMemo(() => (loader ? lazy(loader) : null), [loader])
   const setLastVisited = useApp((st) => st.setLastVisited)
   const { pathname } = useLocation()
+  const lessonCtx = useMemo(() => (meta ? { id: lessonId(n, slug), kind: meta.kind } : null), [meta, n, slug])
 
   useEffect(() => {
     if (meta) setLastVisited(pathname)
@@ -66,11 +85,14 @@ export default function Lesson() {
         </p>
       </header>
 
-      <MDXProvider components={mdxComponents}>
-        <Suspense fallback={<p>Загружаю занятие…</p>}>
-          <Content />
-        </Suspense>
-      </MDXProvider>
+      <LessonContext.Provider value={lessonCtx}>
+        <MDXProvider components={mdxComponents}>
+          <Suspense fallback={<p>Загружаю занятие…</p>}>
+            <Content />
+            <ScrollToHash />
+          </Suspense>
+        </MDXProvider>
+      </LessonContext.Provider>
 
       <LessonDone id={id} skill={meta.skill} />
 

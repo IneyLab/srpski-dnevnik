@@ -158,3 +158,9 @@ hr {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Переход по якорю (#ex-…) не прячет начало под липкой шапкой */
+section[aria-labelledby^='ex-'],
+[id^='ex-'] {
+  scroll-margin-top: 72px;
+}

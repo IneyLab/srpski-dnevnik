@@ -78,6 +78,19 @@ function Header() {
           <NavLink to="/resources" className={s.navLink}>
             Ресурсы
           </NavLink>
+          <span className={s.navSep} aria-hidden="true" />
+          <NavLink to="/character" className={s.navLink}>
+            Персонаж
+          </NavLink>
+          <NavLink to="/map" className={s.navLink}>
+            Карта
+          </NavLink>
+          <NavLink to="/cards" className={s.navLink}>
+            Карточки
+          </NavLink>
+          <NavLink to="/mistakes" className={s.navLink}>
+            Ошибки
+          </NavLink>
         </nav>
         <div className={s.toggles}>
           <ScriptToggle />

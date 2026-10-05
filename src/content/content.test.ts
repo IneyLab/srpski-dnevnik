@@ -162,3 +162,57 @@ describe('прогресс по курсу', () => {
     expect(weekProgress(1, { 'w1.s6': { done: true } }).status).toBe('active')
   })
 })
+
+describe('игровые данные: места, значки, блоки «Вернись к преподавателю»', () => {
+  it('места: id уникальны, точки внутри карты, условия открытия указывают на настоящие занятия', async () => {
+    const { PLACES } = await import('./places')
+    const { project, MAP_W, MAP_H } = await import('../lib/serbia-outline')
+    const ids = new Set<string>()
+    for (const p of PLACES) {
+      expect(ids.has(p.id), p.id).toBe(false)
+      ids.add(p.id)
+      const { x, y } = project(p.lon, p.lat)
+      expect(x > 0 && x < MAP_W && y > 0 && y < MAP_H, `${p.id}: ${x}, ${y}`).toBe(true)
+      expect(p.facts.length, p.id).toBeGreaterThan(0)
+      expect(p.link.week >= 1 && p.link.week <= 13, p.id).toBe(true)
+      for (const u of p.unlock) {
+        if (u === 'start') continue
+        if ('week' in u) {
+          expect(u.week >= 1 && u.week <= 13, p.id).toBe(true)
+          continue
+        }
+        const m = u.lesson.match(/^w(\d+)\.(?:s(\d+)|checkin)$/)
+        expect(m, `${p.id}: ${u.lesson}`).not.toBeNull()
+        const meta = WEEKS[Number(m![1])]
+        // Для опубликованной недели занятие должно существовать
+        if (meta) expect(meta.lessons.some((l) => l.slug === (m![2] ?? 'checkin')), `${p.id}: ${u.lesson}`).toBe(true)
+      }
+      // У опубликованной недели ссылка ведёт на настоящее занятие
+      const lw = WEEKS[p.link.week]
+      if (lw && p.link.slug) expect(lw.lessons.some((l) => l.slug === p.link.slug), p.id).toBe(true)
+    }
+    expect(PLACES.some((p) => p.unlock.includes('start'))).toBe(true)
+  })
+
+  it('значки: id уникальны, неделя курса указана', async () => {
+    const { BADGES } = await import('./badges')
+    expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length)
+    for (const b of BADGES) expect(b.week >= 1 && b.week <= 13, b.id).toBe(true)
+  })
+
+  it('в сербских фрагментах мест и значков нет латиницы (пишем кириллицей)', async () => {
+    const { PLACES } = await import('./places')
+    const { BADGES } = await import('./badges')
+    const texts = [...PLACES.flatMap((p) => [p.sr, ...p.facts, p.tagline]), ...BADGES.map((b) => b.task)]
+    for (const t of texts) {
+      for (const frag of t.split('`').filter((_, i) => i % 2)) expect(/[a-z]/i.test(frag), frag).toBe(false)
+    }
+  })
+
+  it('заголовки блоков ChatBlock в занятии не повторяются (по ним хранится отметка «сделано»)', () => {
+    for (const file of mdxFiles) {
+      const titles = [...readFileSync(file, 'utf8').matchAll(/<ChatBlock[^>]*?\stitle="([^"]+)"/g)].map((m) => m[1])
+      expect(new Set(titles).size, file).toBe(titles.length)
+    }
+  })
+})

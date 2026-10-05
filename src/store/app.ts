@@ -4,8 +4,9 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { safeStorage, STORAGE_KEYS } from '../lib/storage'
 import { SCHEMA_VERSION } from '../lib/progressFile'
-import { award, exerciseXp, XP, type Skill, type XpLedger } from '../lib/xp'
-import type { SrsState } from '../lib/srs'
+import { award, exerciseXp, revoke, XP, type Skill, type XpLedger } from '../lib/xp'
+import { newCard, review, type Grade, type SrsState } from '../lib/srs'
+import { LEARNED_REPS } from '../lib/deck'
 import type { Script } from '../lib/translit'
 
 export type ThemePref = 'system' | 'light' | 'dark'
@@ -56,6 +57,8 @@ export interface ProgressData {
   badges: Record<string, { at: string }>
   srs: Record<string, SrsState>
   mistakes: Record<string, MistakeRecord>
+  /** Блоки «💬 Вернись к преподавателю», отмеченные как сделанные: id → когда. */
+  chats: Record<string, { at: string }>
   lastVisited: { path: string; at: string } | null
 }
 
@@ -71,6 +74,14 @@ interface Actions {
   /** Упражнение выполнено целиком (все пункты верны). */
   completeExercise(id: string, skill: Skill): void
   addMistake(key: string, m: Pick<MistakeRecord, 'kind' | 'label' | 'source' | 'lastGiven'>): void
+  /** Отметка «разобралась/разобрался» в тетради ошибок (за первую — опыт навыка упражнения). */
+  setMistakeResolved(key: string, resolved: boolean, skill: Skill | null): void
+  /** Блок ChatBlock сделан: опыт xp в навык skill (один раз). */
+  setChatDone(id: string, done: boolean, xp: number, skill: Skill | null): void
+  /** Значок за реальное дело; снятая отметка убирает и опыт. */
+  setBadge(id: string, on: boolean, skill: Skill): void
+  /** Ответ на карточку: SM-2; выученная карточка даёт опыт «Лексики». */
+  reviewCard(id: string, grade: Grade): void
   setLastVisited(path: string): void
   replaceAll(data: Partial<ProgressData>): void
   resetProgress(): void
@@ -85,6 +96,7 @@ export const defaultData = (): ProgressData => ({
   badges: {},
   srs: {},
   mistakes: {},
+  chats: {},
   lastVisited: null,
 })
 
@@ -108,6 +120,7 @@ function pickData(s: ProgressData): ProgressData {
     badges: s.badges,
     srs: s.srs,
     mistakes: s.mistakes,
+    chats: s.chats,
     lastVisited: s.lastVisited,
   }
 }
@@ -159,6 +172,39 @@ export const useApp = create<AppState>()(
               ...s.mistakes,
               [key]: { ...m, count: (cur?.count ?? 0) + 1, lastAt: now(), resolved: false, updatedAt: now() },
             },
+          }
+        }),
+
+      setMistakeResolved: (key, resolved, skill) =>
+        set((s) => {
+          const cur = s.mistakes[key]
+          if (!cur) return {}
+          return {
+            mistakes: { ...s.mistakes, [key]: { ...cur, resolved, updatedAt: now() } },
+            xpLedger: resolved ? award(s.xpLedger, `fix:${key}`, XP.mistakeFixed, skill) : s.xpLedger,
+          }
+        }),
+
+      setChatDone: (id, done, xp, skill) =>
+        set((s) => {
+          if (done) return { chats: { ...s.chats, [id]: { at: now() } }, xpLedger: award(s.xpLedger, `chat:${id}`, xp, skill) }
+          const { [id]: _removed, ...chats } = s.chats
+          return { chats, xpLedger: revoke(s.xpLedger, `chat:${id}`) }
+        }),
+
+      setBadge: (id, on, skill) =>
+        set((s) => {
+          if (on) return { badges: { ...s.badges, [id]: { at: now() } }, xpLedger: award(s.xpLedger, `badge:${id}`, XP.badge, skill) }
+          const { [id]: _removed, ...badges } = s.badges
+          return { badges, xpLedger: revoke(s.xpLedger, `badge:${id}`) }
+        }),
+
+      reviewCard: (id, grade) =>
+        set((s) => {
+          const next = review(s.srs[id] ?? newCard(), grade)
+          return {
+            srs: { ...s.srs, [id]: next },
+            xpLedger: next.reps >= LEARNED_REPS ? award(s.xpLedger, `card:${id}`, XP.cardLearned, 'vocab') : s.xpLedger,
           }
         }),
 

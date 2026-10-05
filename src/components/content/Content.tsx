@@ -3,6 +3,9 @@ import s from './content.module.css'
 import { Sr, SrText } from '../sr/Sr'
 import { Icon } from '../Icon'
 import { useSr, useG, useScript } from '../../store/hooks'
+import { useApp } from '../../store/app'
+import { chatXp, type Skill } from '../../lib/xp'
+import { useLesson } from './LessonContext'
 import type { Gendered } from '../../content/types'
 import { copyText } from '../../lib/clipboard'
 import { SOURCES, isSourceId } from '../../content/sources'
@@ -182,10 +185,13 @@ export function ChatBlock({
   title,
   template,
   skill,
+  id,
   children,
 }: {
   kind: keyof typeof CHAT
   title: string
+  /** Стабильный id для отметки «сделано»; по умолчанию — заголовок блока. */
+  id?: string
   template?: string
   /** Навык упражнения с ИИ: одно упражнение — один навык — один новый чат. */
   skill?: keyof typeof CHAT_SKILL
@@ -235,8 +241,41 @@ export function ChatBlock({
             </div>
           </>
         )}
+        <ChatDone kind={kind} id={id ?? title} skill={skill} />
       </div>
     </section>
+  )
+}
+
+/** Кнопка «✓ Сделано» под блоком: за неё начисляется опыт (один раз; снятая отметка убирает опыт). */
+function ChatDone({ kind, id, skill }: { kind: keyof typeof CHAT; id: string; skill?: Skill }) {
+  const lesson = useLesson()
+  const key = lesson ? `${lesson.id}:${id}` : null
+  const done = useApp((st) => (key ? Boolean(st.chats[key]) : false))
+  const setChatDone = useApp((st) => st.setChatDone)
+  const g = useG()
+  if (!lesson || !key) return null
+  const reward = chatXp(kind, lesson.kind, skill)
+  const label =
+    kind === 'report'
+      ? g('✓ Отправила преподавателю', '✓ Отправил преподавателю')
+      : kind === 'people'
+        ? g('✓ Поговорила', '✓ Поговорил')
+        : g('✓ Сделала', '✓ Сделал')
+  return (
+    <div className={s.chatDone}>
+      <button
+        type="button"
+        className={done ? 'btn' : 'btn btn-primary'}
+        aria-pressed={done}
+        onClick={() => setChatDone(key, !done, reward.xp, reward.skill)}
+      >
+        {done ? 'Снять отметку' : label}
+      </button>
+      <span className={s.chatDoneNote} role="status">
+        {done ? `Сделано ✓ · +${reward.xp} опыта` : `+${reward.xp} опыта`}
+      </span>
+    </div>
   )
 }
 
