@@ -37,6 +37,9 @@ export default defineConfig({
       devOptions: { enabled: false },
     }),
   ],
+  // Свои порты вместо стандартных 5173/4173, чтобы не пересекаться с другими проектами
+  server: { port: 5180, strictPort: true },
+  preview: { port: 4180, strictPort: true },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],

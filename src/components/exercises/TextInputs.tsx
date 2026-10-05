@@ -188,7 +188,7 @@ export function FillIn({ ex }: { ex: FillExercise }) {
           </li>
         ))}
       </ol>
-      {training && answer === 'cyr' && <CyrKeys onInsert={t.insert} />}
+      <SerbianKeys script={answer} onInsert={t.insert} />
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -234,7 +234,7 @@ export function Dictation({ ex }: { ex: DictationExercise }) {
           </li>
         ))}
       </ol>
-      {training && answer === 'cyr' && <CyrKeys onInsert={t.insert} />}
+      <SerbianKeys script={answer} onInsert={t.insert} />
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -277,7 +277,7 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
           </li>
         ))}
       </ol>
-      {target === 'cyr' && <CyrKeys onInsert={t.insert} />}
+      <SerbianKeys script={target} onInsert={t.insert} />
       <Actions
         onCheck={t.check}
         onReset={t.reset}
@@ -292,17 +292,21 @@ export function ScriptConvert({ ex }: { ex: ScriptExercise }) {
 }
 
 /**
- * Сербские буквы, которых нет на русской раскладке. Вставляются в поле, где стоял курсор.
+ * Сербские буквы, которых нет на русской и английской раскладках, для всех упражнений с вводом.
+ * Набор зависит от алфавита ответа; буква вставляется в поле, где стоял курсор.
  * Латинскую «j» вместо «ј» проверка и так принимает, но лучше сразу писать правильную букву.
  */
-const SERBIAN_CYR = ['ђ', 'ј', 'љ', 'њ', 'ћ', 'џ']
+const SERBIAN_KEYS: Record<Script, string[]> = {
+  cyr: ['ђ', 'ј', 'љ', 'њ', 'ћ', 'џ'],
+  lat: ['č', 'ć', 'đ', 'š', 'ž'],
+}
 
-function CyrKeys({ onInsert }: { onInsert: (ch: string) => void }) {
+function SerbianKeys({ script, onInsert }: { script: Script; onInsert: (ch: string) => void }) {
   const [upper, setUpper] = useState(false)
   return (
     <div className={s.keys} role="group" aria-label="Сербские буквы">
       <span className={s.keysLabel}>Нет на клавиатуре:</span>
-      {SERBIAN_CYR.map((ch) => {
+      {SERBIAN_KEYS[script].map((ch) => {
         const c = upper ? ch.toUpperCase() : ch
         return (
           <button

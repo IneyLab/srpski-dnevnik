@@ -58,7 +58,7 @@ export function ExerciseShell({
     <section className={s.card} aria-labelledby={`ex-${ex.id}`}>
       <div className={s.head}>
         <h3 className={s.title} id={`ex-${ex.id}`}>
-          {ex.title}
+          <Rich text={ex.title} />
         </h3>
         <span className={s.badge}>
           {SKILL_LABEL[ex.skill]}

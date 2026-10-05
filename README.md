@@ -14,7 +14,7 @@
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # http://localhost:5180 (npm run preview — 4180)
 npm test         # Vitest: логика и целостность содержания
 npm run build    # проверка типов + сборка в dist/
 ```
