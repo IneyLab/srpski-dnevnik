@@ -4,6 +4,8 @@ import g from './game.module.css'
 import { useApp } from '../store/app'
 import { pickGender, useG, useGender, useScript, useSr } from '../store/hooks'
 import { EXERCISES, VOCAB } from '../content/registry'
+import { DICTIONARY } from '../content/dictionary'
+import { Rich } from '../components/sr/Rich'
 import { ankiCsv, buildDeck, deckStats, dueQueue, NEW_PER_SESSION, type Card, type Dir } from '../lib/deck'
 import { newCard, review, type Grade } from '../lib/srs'
 import { Say } from '../components/content/Say'
@@ -71,7 +73,11 @@ function Flashcard({ card, onGrade }: { card: Card; onGrade: (grade: Grade) => v
       {card.audio && <Say word={word} />}
     </span>
   )
-  const ruSide = <span className={g.flashWord}>{card.ru}</span>
+  const ruSide = (
+    <span className={g.flashWord}>
+      <Rich text={card.ru} />
+    </span>
+  )
   const front = card.dir === 'sr-ru' ? srSide : ruSide
   const back = card.dir === 'sr-ru' ? ruSide : srSide
   const notes = [card.g ? { m: 'мужской род', f: 'женский род', n: 'средний род' }[card.g] : '', card.note ?? '', card.falseFriend ? `Ложный друг: ${card.falseFriend}` : '']
@@ -82,6 +88,12 @@ function Flashcard({ card, onGrade }: { card: Card; onGrade: (grade: Grade) => v
     <section className={`${g.sheet} ${g.flash}`} aria-label="Карточка" data-no-gloss>
       <p className={g.flashMeta}>
         {DIR_LABEL[card.dir]} · неделя {card.week || '—'}
+        {card.fromLookup && (
+          <>
+            {' '}
+            · <span className={g.mistakeTag}>посмотрен перевод</span>
+          </>
+        )}
         {card.fromMistake && (
           <>
             {' '}
@@ -94,7 +106,16 @@ function Flashcard({ card, onGrade }: { card: Card; onGrade: (grade: Grade) => v
         <>
           <div className={g.flashBack}>
             {back}
-            {notes && <p className={g.flashNote}>{notes}</p>}
+            {notes && (
+              <p className={g.flashNote}>
+                <Rich text={notes} />
+              </p>
+            )}
+            {card.context && (
+              <p className={g.flashNote}>
+                Контекст: «{card.context}»
+              </p>
+            )}
           </div>
           <div className={g.grades} role="group" aria-label="Насколько легко вспомнилось?">
             {GRADES.map((gr) => {
@@ -130,6 +151,7 @@ function Flashcard({ card, onGrade }: { card: Card; onGrade: (grade: Grade) => v
 export default function Cards() {
   const lessons = useApp((st) => st.lessons)
   const mistakes = useApp((st) => st.mistakes)
+  const lookups = useApp((st) => st.lookups)
   const srsAll = useApp((st) => st.srs)
   const reviewCard = useApp((st) => st.reviewCard)
   const gender = useGender()
@@ -151,8 +173,8 @@ export default function Cards() {
   }, [])
 
   const allCards = useMemo(
-    () => buildDeck({ vocab: VOCAB, lessons, mistakes, exercises: EXERCISES, gender }),
-    [lessons, mistakes, gender],
+    () => buildDeck({ vocab: VOCAB, lessons, mistakes, exercises: EXERCISES, gender, lookups, dictionary: DICTIONARY }),
+    [lessons, mistakes, lookups, gender],
   )
   const deck = useMemo(() => (mode === 'both' ? allCards : allCards.filter((c) => c.dir === mode)), [allCards, mode])
   const stats = deckStats(deck, srsAll)
@@ -178,7 +200,8 @@ export default function Cards() {
     <div className={g.page}>
       <h1>Карточки слов</h1>
       <p className={g.intro}>
-        Слова попадают в колоду, когда занятие отмечено выполненным, а ещё — из тетради ошибок. Повторение по алгоритму
+        Слова попадают в колоду, когда занятие отмечено выполненным, из тетради ошибок, а ещё — когда ты смотришь перевод
+        слова в тексте (двойной щелчок или долгое нажатие): тогда в карточке есть и фраза, где слово встретилось. Повторение по алгоритму
         SM-2: чем легче вспомнилось, тем позже карточка вернётся.
       </p>
 
@@ -241,7 +264,7 @@ export default function Cards() {
         <h2 id="anki-title">Экспорт в Anki</h2>
         <p className={g.small}>
           Файл CSV (UTF-8, разделитель «;»): сербское слово — {script === 'cyr' ? 'кириллицей' : 'латиницей'} и в{' '}
-          {gender === 'f' ? 'женской' : 'мужской'} форме, как сейчас в учебнике; перевод с пометками (род, ложный друг);
+          {gender === 'f' ? 'женской' : 'мужской'} форме, как сейчас в учебнике; перевод с пометками (род, ложный друг, контекст);
           метки недели и занятия. В Anki: «Файл → Импорт», выбрать файл — разделитель, колода и поля подставятся сами. Чтобы
           учить в обе стороны, выбери тип записи «Basic (and reversed card)».
         </p>
@@ -261,7 +284,8 @@ export default function Cards() {
             <ul className={g.wordList}>
               {words.map((c) => (
                 <li key={c.base}>
-                  <span lang="sr">{sr(pickGender(c.sr, gender))}</span> — {c.ru}
+                  <span lang="sr">{sr(pickGender(c.sr, gender))}</span> — <Rich text={c.ru} />
+                  {c.context && <span className={g.muted}> · «{c.context}»</span>}
                 </li>
               ))}
             </ul>

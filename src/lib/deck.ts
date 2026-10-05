@@ -1,8 +1,9 @@
 // Колода карточек слов (/cards): какие слова в неё попадают, очередь на сегодня и экспорт в Anki.
-// Чистые функции: содержание курса, отметки занятий и тетрадь ошибок передаются параметрами.
+// Чистые функции: содержание курса, отметки занятий, тетрадь ошибок и посмотренные переводы передаются параметрами.
 import type { Exercise, Gendered, VocabItem } from '../content/types'
 import { isDue, type SrsState } from './srs'
 import { toScript, type Script } from './translit'
+import { splitGloss, type Glossary } from './glossary'
 
 export type Dir = 'sr-ru' | 'ru-sr'
 export const DIRS: Dir[] = ['sr-ru', 'ru-sr']
@@ -10,7 +11,7 @@ export const DIRS: Dir[] = ['sr-ru', 'ru-sr']
 export interface Card {
   /** Ключ состояния в store.srs: `<base>|<dir>`. */
   id: string
-  /** Слово без направления: `v:<слово>` из словаря или `m:<ключ ошибки>` из тетради ошибок. */
+  /** Слово без направления: `v:<слово>` из словаря, `m:<ключ ошибки>` из тетради ошибок, `l:<слово>` — посмотренный перевод. */
   base: string
   dir: Dir
   /** Сербский (кириллица, может зависеть от рода). */
@@ -24,6 +25,10 @@ export interface Card {
   falseFriend?: string
   /** Слово попало в колоду из тетради ошибок. */
   fromMistake: boolean
+  /** Ученик посмотрел перевод слова (двойной щелчок / долгое нажатие). */
+  fromLookup?: boolean
+  /** Фраза, в которой ученик встретил слово. */
+  context?: string
   /** Есть озвучка Google Переводчика (слова словаря и диктантов с tts). */
   audio: boolean
 }
@@ -34,11 +39,20 @@ interface MistakeLike {
   resolved: boolean
 }
 
+interface LookupLike {
+  context: string
+  week: number
+  lesson: string
+}
+
 export interface DeckInput {
   vocab: Record<number, VocabItem[]>
   lessons: Record<string, { done: boolean }>
   mistakes: Record<string, MistakeLike>
   exercises: Record<string, Exercise>
+  /** Посмотренные переводы (ключ — слово из словаря подсказки) и сам словарь. */
+  lookups?: Record<string, LookupLike>
+  dictionary?: Glossary
   gender: 'f' | 'm'
   dirs?: Dir[]
 }
@@ -114,7 +128,7 @@ export function mistakeWords(ex: Exercise, index: number, gender: 'f' | 'm'): Mi
   }
 }
 
-function vocabCard(v: VocabItem, week: number, dir: Dir, fromMistake: boolean): Card {
+function vocabCard(v: VocabItem, week: number, dir: Dir, fromMistake: boolean, context?: string): Card {
   const base = `v:${keyOf(v.sr)}`
   return {
     id: `${base}|${dir}`,
@@ -128,14 +142,23 @@ function vocabCard(v: VocabItem, week: number, dir: Dir, fromMistake: boolean): 
     note: v.note,
     falseFriend: v.falseFriend,
     fromMistake,
+    fromLookup: context !== undefined,
+    context: context || undefined,
     audio: true,
   }
+}
+
+/** Имя или название — с заглавной, если так оно записано в переводе: «ана» → «Ана». */
+function displayForm(key: string, ru: string): string {
+  const cap = key.charAt(0).toUpperCase() + key.slice(1)
+  return ru.includes(`\`${cap}\``) ? cap : key
 }
 
 /**
  * Колода: слова выполненных занятий + слова из тетради ошибок.
  * Ошибка, совпавшая со словом словаря, добавляет это слово (даже если занятие ещё не отмечено).
  * Остальные ошибки в упражнениях на слова (с переводом) — отдельные карточки, пока ошибка не разобрана.
+ * Посмотренный перевод тоже добавляет слово: словарное — его карточку, остальное — карточку из словаря подсказки.
  */
 export function buildDeck(input: DeckInput): Card[] {
   const { vocab, lessons, mistakes, exercises, gender } = input
@@ -177,6 +200,40 @@ export function buildDeck(input: DeckInput): Card[] {
     }
   }
 
+  // Посмотренные переводы. Контекст — у карточки словарного слова или у отдельной карточки.
+  const vocabContext = new Map<string, string>()
+  const lookupCards: Card[] = []
+  for (const [key, l] of Object.entries(input.lookups ?? {})) {
+    const hit = index.get(normalizeWord(key))
+    if (hit) {
+      const k = keyOf(hit.v.sr)
+      if (!vocabContext.get(k)) vocabContext.set(k, l.context)
+      continue
+    }
+    const e = input.dictionary?.[key]
+    if (!e) continue
+    const { ru, rest } = splitGloss(e.ru)
+    const note = [rest, e.base ? `начальная форма: \`${e.base}\`` : '', e.note].filter(Boolean).join(' · ')
+    const base = `l:${key}`
+    for (const dir of dirs) {
+      lookupCards.push({
+        id: `${base}|${dir}`,
+        base,
+        dir,
+        sr: displayForm(key, e.ru),
+        ru,
+        week: l.week,
+        lesson: l.lesson,
+        note: note || undefined,
+        falseFriend: e.falseFriend,
+        fromMistake: false,
+        fromLookup: true,
+        context: l.context || undefined,
+        audio: true,
+      })
+    }
+  }
+
   const out: Card[] = []
   const weeks = Object.keys(vocab)
     .map(Number)
@@ -186,11 +243,12 @@ export function buildDeck(input: DeckInput): Card[] {
       const k = keyOf(v.sr)
       const lessonDone = Boolean(lessons[`w${w}.${v.lesson}`]?.done)
       const mistaken = fromMistakes.has(k)
-      if (!lessonDone && !mistaken) continue
-      for (const dir of dirs) out.push(vocabCard(v, w, dir, mistaken))
+      const context = vocabContext.get(k)
+      if (!lessonDone && !mistaken && context === undefined) continue
+      for (const dir of dirs) out.push(vocabCard(v, w, dir, mistaken, context))
     }
   }
-  return [...out, ...mistakeCards]
+  return [...out, ...mistakeCards, ...lookupCards]
 }
 
 /** Сколько новых карточек показывать за один подход. */
@@ -198,7 +256,7 @@ export const NEW_PER_SESSION = 10
 
 /**
  * Очередь: сначала карточки, которым пора на повторение (самые просроченные первыми),
- * потом новые — сначала из тетради ошибок, сначала «сербский → русский».
+ * потом новые — сначала из тетради ошибок, потом посмотренные переводы, сначала «сербский → русский».
  */
 export function dueQueue(deck: Card[], srs: Record<string, SrsState>, now = new Date(), newLimit = NEW_PER_SESSION): Card[] {
   const due = deck
@@ -207,7 +265,11 @@ export function dueQueue(deck: Card[], srs: Record<string, SrsState>, now = new 
   const fresh = deck
     .filter((c) => !srs[c.id])
     .map((c, i) => ({ c, i }))
-    .sort((a, b) => Number(b.c.fromMistake) - Number(a.c.fromMistake) || (a.c.dir === b.c.dir ? 0 : a.c.dir === 'sr-ru' ? -1 : 1) || a.i - b.i)
+    .sort(
+      (a, b) =>
+        Number(b.c.fromMistake) - Number(a.c.fromMistake) ||
+        Number(Boolean(b.c.fromLookup)) - Number(Boolean(a.c.fromLookup)) ||
+        (a.c.dir === b.c.dir ? 0 : a.c.dir === 'sr-ru' ? -1 : 1) || a.i - b.i)
     .map((x) => x.c)
     .slice(0, newLimit)
   return [...due, ...fresh]
@@ -270,9 +332,15 @@ export function ankiCsv(deck: Card[], script: Script, gender: 'f' | 'm', deckNam
     if (seen.has(c.base)) continue
     seen.add(c.base)
     const front = toScript(pick(c.sr, gender), script)
-    const notes = [c.g ? { m: 'м. р.', f: 'ж. р.', n: 'ср. р.' }[c.g] : '', c.note ?? '', c.falseFriend ? `ложный друг: ${c.falseFriend}` : '']
-      .filter(Boolean)
-    const back = escapeHtml(c.ru) + (notes.length ? `<br><small>${escapeHtml(notes.join(' · '))}</small>` : '')
+    // Сербские фрагменты в `кавычках` — в выбранном алфавите; контекст — как его видел ученик
+    const rich = (s: string) => s.replace(/`([^`]*)`/g, (_, sr: string) => toScript(sr, script))
+    const notes = [
+      c.g ? { m: 'м. р.', f: 'ж. р.', n: 'ср. р.' }[c.g] : '',
+      rich(c.note ?? ''),
+      c.falseFriend ? `ложный друг: ${rich(c.falseFriend)}` : '',
+      c.context ? `контекст: «${c.context}»` : '',
+    ].filter(Boolean)
+    const back = escapeHtml(rich(c.ru)) + (notes.length ? `<br><small>${escapeHtml(notes.join(' · '))}</small>` : '')
     const tags = [
       'srpski-dnevnik',
       `nedelja-${c.week}`,
@@ -280,6 +348,7 @@ export function ankiCsv(deck: Card[], script: Script, gender: 'f' | 'm', deckNam
       c.g ? G_TAG[c.g] : '',
       c.falseFriend ? 'lazni-prijatelj' : '',
       c.fromMistake ? 'greska' : '',
+      c.fromLookup ? 'pogledano' : '',
     ].filter(Boolean)
     lines.push([front, back, tags.join(' ')].map((f) => csvField(f)).join(';'))
   }

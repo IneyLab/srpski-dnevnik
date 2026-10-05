@@ -161,4 +161,32 @@ describe('экспорт в Anki (CSV)', () => {
     const deck = buildDeck({ ...base, vocab: { 1: [{ sr: 'а', ru: 'a < b & c', lesson: 's1' }] }, lessons: { 'w1.s1': { done: true } } })
     expect(ankiCsv(deck, 'cyr', 'f')).toContain('а;"a &lt; b &amp; c";')
   })
+
+  it('посмотренный перевод: словарное слово — с контекстом, остальное — карточка из словаря подсказки', () => {
+    const dictionary = {
+      зовем: { ru: 'зову: `Зовем се` — меня зовут', base: 'звати се' },
+      ана: { ru: '`Ана` (женское имя)' },
+    }
+    const lookups = {
+      стан: { context: 'Ово је наш стан.', week: 1, lesson: 's2' },
+      зовем: { context: 'Zovem se Ana.', week: 1, lesson: 's2' },
+      ана: { context: '', week: 0, lesson: '' },
+      непознато: { context: 'x', week: 1, lesson: 's1' },
+    }
+    const deck = buildDeck({ ...base, lessons: {}, lookups, dictionary })
+    expect(deck.map((c) => c.id)).toEqual(['v:стан|sr-ru', 'v:стан|ru-sr', 'l:зовем|sr-ru', 'l:зовем|ru-sr', 'l:ана|sr-ru', 'l:ана|ru-sr'])
+    expect(deck[0]).toMatchObject({ context: 'Ово је наш стан.', fromLookup: true, ru: 'квартира' })
+    expect(deck[2]).toMatchObject({
+      sr: 'зовем',
+      ru: 'зову',
+      note: '`Зовем се` — меня зовут · начальная форма: `звати се`',
+      context: 'Zovem se Ana.',
+      audio: true,
+    })
+    expect(deck[4]).toMatchObject({ sr: 'Ана', context: undefined })
+    // Новые: сначала ошибки, потом посмотренные — тут все посмотренные, порядок «сербский → русский» первым
+    expect(dueQueue(deck, {}).map((c) => c.dir).slice(0, 3)).toEqual(['sr-ru', 'sr-ru', 'sr-ru'])
+    const csv = ankiCsv(deck, 'lat', 'f')
+    expect(csv).toContain('zovem;зову<br><small>Zovem se — меня зовут · начальная форма: zvati se · контекст: «Zovem se Ana.»</small>;srpski-dnevnik nedelja-1 cas-s2 pogledano')
+  })
 })

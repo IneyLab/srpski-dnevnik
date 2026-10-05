@@ -1,5 +1,6 @@
 // Скачивает озвучку Google Переводчика (сербский голос) для всех слов, которые нужны учебнику:
-// <RepeatAfter words="…"> в MDX и диктанты с tts: true в exercises.ts.
+// <RepeatAfter words="…"> в MDX, диктанты с tts: true в exercises.ts, словарь недели и
+// все слова подсказки по двойному щелчку (glossary.ts недель и однословные места на карте).
 // Готовые файлы не трогает. После скачивания режет их в audio-src/google-tts/ (как split-audio).
 // Запуск: npm run tts
 import { execFileSync } from 'node:child_process'
@@ -28,8 +29,22 @@ for (const w of readdirSync(weeksDir)) {
   if (existsSync(vocab)) {
     const { default: list } = await import(pathToFileURL(vocab).href)
     for (const v of list) (typeof v.sr === 'string' ? [v.sr] : [v.sr.f, v.sr.m]).forEach((x) => words.add(x))
+    // Подсказка по двойному щелчку озвучивает и отдельные слова из «мој, моја, моје»
+    for (const v of list) {
+      if (typeof v.sr !== 'string') continue
+      for (const f of v.sr.split(',')) if (!/\s/.test(f.trim())) words.add(f.trim().replace(/[!?.…]+$/, '').toLowerCase())
+    }
+  }
+  // Подсказка по двойному щелчку: формы из глоссария (строка «форма, форма2 = перевод | основа»)
+  const glossary = join(weeksDir, w, 'glossary.ts')
+  if (existsSync(glossary)) {
+    const { default: lines } = await import(pathToFileURL(glossary).href)
+    for (const line of lines) for (const f of line.slice(0, line.indexOf('=')).split(',')) words.add(f.trim().toLowerCase())
   }
 }
+// Однословные места на карте — тоже в подсказке
+const { PLACES } = await import(pathToFileURL(join('src', 'content', 'places.ts')).href)
+for (const p of PLACES) if (!/\s/.test(p.sr)) words.add(p.sr.toLowerCase())
 // Примеры в таблице алфавита
 const { ALPHABET } = await import(pathToFileURL(join('src', 'content', 'alphabet.ts')).href)
 for (const l of ALPHABET) words.add(l.ex)

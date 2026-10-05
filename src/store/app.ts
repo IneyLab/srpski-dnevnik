@@ -48,6 +48,18 @@ export interface MistakeRecord {
   updatedAt: string
 }
 
+/** Слово, перевод которого ученик посмотрел двойным щелчком или долгим нажатием: оно идёт в карточки. */
+export interface LookupRecord {
+  /** Фраза, в которой слово встретилось (как её видел ученик, в том алфавите). */
+  context: string
+  /** Где: неделя и занятие ('s2'); 0 и '' — вне занятий (шпаргалки, карта). */
+  week: number
+  lesson: string
+  count: number
+  addedAt: string
+  updatedAt: string
+}
+
 export interface ProgressData {
   schemaVersion: number
   settings: Settings
@@ -57,6 +69,8 @@ export interface ProgressData {
   badges: Record<string, { at: string }>
   srs: Record<string, SrsState>
   mistakes: Record<string, MistakeRecord>
+  /** Посмотренные переводы: ключ — слово из словаря подсказки (кириллица, строчные). */
+  lookups: Record<string, LookupRecord>
   /** Блоки «💬 Вернись к преподавателю», отмеченные как сделанные: id → когда. */
   chats: Record<string, { at: string }>
   lastVisited: { path: string; at: string } | null
@@ -82,6 +96,9 @@ interface Actions {
   setBadge(id: string, on: boolean, skill: Skill): void
   /** Ответ на карточку: SM-2; выученная карточка даёт опыт «Лексики». */
   reviewCard(id: string, grade: Grade): void
+  /** Посмотрен перевод слова: добавить в карточки (контекст — от первой встречи). */
+  addLookup(key: string, at: Pick<LookupRecord, 'context' | 'week' | 'lesson'>): void
+  removeLookup(key: string): void
   setLastVisited(path: string): void
   replaceAll(data: Partial<ProgressData>): void
   resetProgress(): void
@@ -96,6 +113,7 @@ export const defaultData = (): ProgressData => ({
   badges: {},
   srs: {},
   mistakes: {},
+  lookups: {},
   chats: {},
   lastVisited: null,
 })
@@ -120,6 +138,7 @@ function pickData(s: ProgressData): ProgressData {
     badges: s.badges,
     srs: s.srs,
     mistakes: s.mistakes,
+    lookups: s.lookups,
     chats: s.chats,
     lastVisited: s.lastVisited,
   }
@@ -206,6 +225,23 @@ export const useApp = create<AppState>()(
             srs: { ...s.srs, [id]: next },
             xpLedger: next.reps >= LEARNED_REPS ? award(s.xpLedger, `card:${id}`, XP.cardLearned, 'vocab') : s.xpLedger,
           }
+        }),
+
+      addLookup: (key, at) =>
+        set((s) => {
+          const cur = s.lookups[key]
+          const t = now()
+          const rec: LookupRecord = cur
+            ? { ...cur, context: cur.context || at.context, count: cur.count + 1, updatedAt: t }
+            : { ...at, count: 1, addedAt: t, updatedAt: t }
+          return { lookups: { ...s.lookups, [key]: rec } }
+        }),
+
+      removeLookup: (key) =>
+        set((s) => {
+          const rest = { ...s.lookups }
+          delete rest[key]
+          return { lookups: rest }
         }),
 
       setLastVisited: (path) => {

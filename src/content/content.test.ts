@@ -258,6 +258,11 @@ describe('перевод по двойному щелчку', () => {
     expect([...missing], 'добавь слова в weeks/NN/glossary.ts').toEqual([])
   })
 
+  it('у каждого слова подсказки есть озвучка (иначе: npm run tts)', () => {
+    const missing = Object.keys(DICTIONARY).filter((w) => !ttsExists(w))
+    expect(missing).toEqual([])
+  })
+
   it('слова из словариков недель есть в подсказке', () => {
     expect(DICTIONARY['стан']?.ru).toBe('квартира')
     expect(DICTIONARY['уморан']).toBeDefined()

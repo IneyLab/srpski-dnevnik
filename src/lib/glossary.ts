@@ -48,3 +48,52 @@ export function parseGlossary(lines: string[]): Glossary {
 export function wordsOf(text: string): string[] {
   return (text.replace(/<[^>]+>/g, '').match(/[а-яёђјљњћџ]+/giu) ?? []).map(glossKey)
 }
+
+/**
+ * Перевод для карточки: основное значение — до первого «:» вне скобок, остальное (примеры) — в пометку.
+ * «зову: `Зовем се` — меня зовут» → { ru: 'зову', rest: '`Зовем се` — меня зовут' }
+ */
+export function splitGloss(ru: string): { ru: string; rest?: string } {
+  let depth = 0
+  for (let i = 0; i < ru.length; i++) {
+    const ch = ru[i]
+    if (ch === '(') depth++
+    else if (ch === ')') depth = Math.max(0, depth - 1)
+    else if (ch === ':' && depth === 0 && ru[i + 1] === ' ') return { ru: ru.slice(0, i).trim(), rest: ru.slice(i + 1).trim() }
+  }
+  return { ru }
+}
+
+const SENTENCE_END = /[.!?…]/
+const MAX_CONTEXT = 200
+
+/**
+ * Предложение вокруг позиции offset в тексте (для поля «контекст» карточки).
+ * Слишком длинное — обрезается вокруг слова с «…».
+ */
+export function sentenceAround(text: string, offset: number): string {
+  let start = 0
+  for (let i = Math.min(offset, text.length) - 1; i > 0; i--) {
+    if (SENTENCE_END.test(text[i - 1]) && /\s/.test(text[i])) {
+      start = i
+      break
+    }
+  }
+  let end = text.length
+  for (let i = offset; i < text.length; i++) {
+    if (SENTENCE_END.test(text[i]) && (i + 1 === text.length || /\s/.test(text[i + 1]))) {
+      // Многоточие и «?!» — целиком
+      end = i + 1
+      while (end < text.length && SENTENCE_END.test(text[end])) end++
+      break
+    }
+  }
+  let from = start
+  let to = end
+  if (to - from > MAX_CONTEXT) {
+    from = Math.max(start, offset - MAX_CONTEXT / 2)
+    to = Math.min(end, from + MAX_CONTEXT)
+  }
+  const cut = text.slice(from, to).replace(/\s+/g, ' ').trim()
+  return `${from > start ? '…' : ''}${cut}${to < end ? '…' : ''}`
+}

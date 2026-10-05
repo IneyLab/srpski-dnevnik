@@ -164,3 +164,19 @@ section[aria-labelledby^='ex-'],
 [id^='ex-'] {
   scroll-margin-top: 72px;
 }
+
+/* Долгое нажатие на сербское слово показывает перевод (WordGloss): на сенсорных экранах
+   отключаем выделение текста и системное меню, чтобы они не перекрывали подсказку.
+   В упражнениях и полях ввода всё как обычно. */
+@media (pointer: coarse) {
+  main [lang='sr']:not(input):not(textarea) {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  main [data-no-gloss] [lang='sr'] {
+    -webkit-user-select: auto;
+    user-select: auto;
+    -webkit-touch-callout: default;
+  }
+}
