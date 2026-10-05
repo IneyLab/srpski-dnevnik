@@ -1,4 +1,14 @@
 {
+  "auto.mp3": {
+    "size": 6912,
+    "sha256": "d69b0c77da5a7a2ed82a3b38df8ef36c96e30ea84fabaa7135720d6d21e28daa",
+    "parts": 1
+  },
+  "autobus.mp3": {
+    "size": 8832,
+    "sha256": "3809583243f2f493f6310f15127792473fa86f6296ab1581233b1935c717951c",
+    "parts": 1
+  },
   "avion.mp3": {
     "size": 7872,
     "sha256": "0f68b6febe42e698aad0c367f12e30881ef818ca065d728f6c1eb09dac036ef5",
@@ -24,6 +34,11 @@
     "sha256": "c061c800a2445997d4fdcc5c052519a030a5e768ded145b3e51915fc4e7dcc6b",
     "parts": 1
   },
+  "brdo.mp3": {
+    "size": 6912,
+    "sha256": "635adc532157f48457cbe93fda7a016153ec85557e2e28c489920e21ce9e0400",
+    "parts": 1
+  },
   "chaj.mp3": {
     "size": 5184,
     "sha256": "035556958917283506072d8a1d072ad111f48aa58232dc1e3408dd6a6f7b2636",
@@ -37,6 +52,11 @@
   "chasha.mp3": {
     "size": 6528,
     "sha256": "67a9278b94eb3f3c6c333ad10ce1ce65ae79598a7b106ec85043f6f4cdad627f",
+    "parts": 1
+  },
+  "cjao.mp3": {
+    "size": 6912,
+    "sha256": "2a96bda4eac5536afe578c68923137b4c1d31261216db0a5eb3924e4f7eb514b",
     "parts": 1
   },
   "cjar.mp3": {
@@ -74,6 +94,21 @@
     "sha256": "ad11e47ee23c93c909db57363d6cb1ba246f7439f552885b179a16d17b6f2daa",
     "parts": 1
   },
+  "dobar-dan.mp3": {
+    "size": 9984,
+    "sha256": "7faaaf22565f058f33b62e3b492e3d1e3fdbd90ef4b01bfa324f4b7816d36d13",
+    "parts": 1
+  },
+  "dobro-jutro.mp3": {
+    "size": 10176,
+    "sha256": "40d36ddc1fa36720538f015303cdaf6f93c51e784fd1aed3b0734e4169de0458",
+    "parts": 1
+  },
+  "dobro-veche.mp3": {
+    "size": 11328,
+    "sha256": "bc7912eb4562754faca7793b6d6a26653641c8c0360ed9829c1df4e9f11b07fb",
+    "parts": 1
+  },
   "dogovor.mp3": {
     "size": 7872,
     "sha256": "104ee93db5126c6aa4e6ac16c8572c6796bdf587421762bcd94fd5151fd102b7",
@@ -82,6 +117,16 @@
   "dom.mp3": {
     "size": 5760,
     "sha256": "66e4aafcfe56e8a2978ba8a898e1864c6b399829172b3ad6c043226eff94be42",
+    "parts": 1
+  },
+  "dovidjenja.mp3": {
+    "size": 9024,
+    "sha256": "b04fa4dd13dd1af9d016f543f72c61f08dd557afff13b79badae7179ebad41ba",
+    "parts": 1
+  },
+  "drago-mi-je.mp3": {
+    "size": 9792,
+    "sha256": "a704ce0ade0153e2b8e667f19d03d477256bd917ccf6a5ca016e9635cf2af7c9",
     "parts": 1
   },
   "drug.mp3": {
@@ -124,6 +169,11 @@
     "sha256": "af194b021e5057c8e40c3f718b70efa429f7115d9a288b810c980e6e478628b3",
     "parts": 1
   },
+  "i-meni.mp3": {
+    "size": 7680,
+    "sha256": "ab5e98c469db7f45019161002290347a653be93843f3c6a5d38b165e63fc7e35",
+    "parts": 1
+  },
   "igra.mp3": {
     "size": 6528,
     "sha256": "4a6239fb0a0c3798a0e4b35625e0a17911ffd45455b99a0c24bd64553ed70661",
@@ -149,6 +199,11 @@
     "sha256": "efbec9dfa96a39056fd5246d01518ae865d80bc11c5d775e76942deb24d63704",
     "parts": 1
   },
+  "jezero.mp3": {
+    "size": 8256,
+    "sha256": "fdd9cbc4a1a753755e04a8ce6eac7dd5bb9b903c46fde5dd4356b4f60717f9a3",
+    "parts": 1
+  },
   "jovan.mp3": {
     "size": 7296,
     "sha256": "065f344077dddbc7002ed7eff960665b22a81cb493d7357ac0596ef3499e9928",
@@ -167,6 +222,21 @@
   "junak.mp3": {
     "size": 7104,
     "sha256": "26762b66aa74c35142edcecf8d066313379f8056933fc89ef1dbfcfb47345844",
+    "parts": 1
+  },
+  "jutro.mp3": {
+    "size": 6720,
+    "sha256": "f8a96ab09934071db4e612301eaf776f409770cd7efd3b06d33829e816d71ebd",
+    "parts": 1
+  },
+  "kako-se-zovesh.mp3": {
+    "size": 10752,
+    "sha256": "0c87f2a30ba63db5b64335cb9bc847144836ed8ec431cf927589ae32fae0c1bd",
+    "parts": 1
+  },
+  "karta.mp3": {
+    "size": 7296,
+    "sha256": "68fd4f97833f36b27b03d38c9d8961545cd2b27f8438865184c4a902880f0fed",
     "parts": 1
   },
   "konj.mp3": {
@@ -229,9 +299,19 @@
     "sha256": "d346a3b77c61e3c05efac273181276b6617ed6eb7e78993a494fc52c83728eb6",
     "parts": 1
   },
+  "moj-moja-moje.mp3": {
+    "size": 20736,
+    "sha256": "ea2b4cd58350c192e29a789498578ece223cf629bca48ee752f7b064b5b666e5",
+    "parts": 1
+  },
   "moj.mp3": {
     "size": 6144,
     "sha256": "b48b0c13a2b6fc2c05c9f87bcf74ff0cf4353fd8187afb5da9ecfcde98894699",
+    "parts": 1
+  },
+  "more.mp3": {
+    "size": 6720,
+    "sha256": "7bad38dba3c51fbe30501c70f4a41e6ab46acf5ab68277627819e228151abf90",
     "parts": 1
   },
   "muzh.mp3": {
@@ -242,6 +322,11 @@
   "nada.mp3": {
     "size": 7296,
     "sha256": "b7cf358916f6a1ce9e2c7aa49c5528289430d4ba9758dc5f78c57e533a9520c9",
+    "parts": 1
+  },
+  "nash-nasha-nashe.mp3": {
+    "size": 21504,
+    "sha256": "cbe80ab6e83bcfc21ca03e6191f2cb45bbbb7cff7a7aed9a4dfbbce1dcc04f98",
     "parts": 1
   },
   "nocj.mp3": {
@@ -274,6 +359,11 @@
     "sha256": "2e3746fcb25b5b083b52baee6e8edc397baaa6b2621a2a6e56fc7350ccc31db6",
     "parts": 1
   },
+  "otac.mp3": {
+    "size": 7680,
+    "sha256": "7cd835fe8107e0854efb80328f39d44e2dd3dc595cb155a9704a3380e8874d1f",
+    "parts": 1
+  },
   "pad.mp3": {
     "size": 5952,
     "sha256": "33ad7a1d95701080c52cdb94613a185d6628cbb740748639ee71aebe688eb622",
@@ -282,6 +372,11 @@
   "pas.mp3": {
     "size": 5952,
     "sha256": "af4ebd99ea0ba816b1d46ecbc8453e8c2678b15d182c0260161c5acc4bddf154",
+    "parts": 1
+  },
+  "pasosh.mp3": {
+    "size": 7680,
+    "sha256": "5f5662b1af01113749488d02f85de08b2430c04b2db5cb71fb9975ac4ad94a46",
     "parts": 1
   },
   "proizvod.mp3": {
@@ -304,6 +399,11 @@
     "sha256": "7e7e86dbfd95183173cac4f06b3c0d47ed44dcf29076ef5005e0ad758f4fcb39",
     "parts": 1
   },
+  "put.mp3": {
+    "size": 5952,
+    "sha256": "c6ad39107a7f318853d95f4ca01dd4088932d251ca13bf0b00c7ecac38026c9a",
+    "parts": 1
+  },
   "razgovor.mp3": {
     "size": 8832,
     "sha256": "21d0fb04961914988342a60501b87e7661c025819bbf6037c9665c9b1d13c69b",
@@ -324,9 +424,19 @@
     "sha256": "bdb2abfbc527e5561e32084804c682643962b1860d804ede447e72f793f6cfef",
     "parts": 1
   },
+  "ruksak.mp3": {
+    "size": 7296,
+    "sha256": "d5d4b1ccae7b20ce7d44c95861eb909c74ff3cf10bb62d4850004dc50532a11f",
+    "parts": 1
+  },
   "sala.mp3": {
     "size": 7872,
     "sha256": "29babd4ca5d860fbe144ee3fa82c191c15a3b527644fa347b8ab9838ac560ff4",
+    "parts": 1
+  },
+  "sat.mp3": {
+    "size": 7488,
+    "sha256": "5762f67656077243d48566050a6bf8b361ac258df468288973cd95befd59afaa",
     "parts": 1
   },
   "shuma.mp3": {
@@ -339,9 +449,24 @@
     "sha256": "9aa81e983ee48d1881380e40cb68461ba6d25a8302d9f72dd141795e5cf396e0",
     "parts": 1
   },
+  "so.mp3": {
+    "size": 5760,
+    "sha256": "4809654c1f17701f03ec163efc9f0effedf8d6dc403aaccab7e650fa8b41e289",
+    "parts": 1
+  },
+  "soba.mp3": {
+    "size": 7104,
+    "sha256": "a339500ac82d4b9aed76147971e530b9bee3598e16503b8dece66f516c67bde3",
+    "parts": 1
+  },
   "stan.mp3": {
     "size": 6720,
     "sha256": "2f186474b4867f745f950bb7731a237c1807d7e9dd8cc43a120723c28bc89717",
+    "parts": 1
+  },
+  "sto.mp3": {
+    "size": 6336,
+    "sha256": "21bf2780408afb5b2136cd126faaac2fc265b49b62d8e5d30f5df0479c097907",
     "parts": 1
   },
   "stub.mp3": {
@@ -389,14 +514,44 @@
     "sha256": "a7027e60fdbc25a356728232459e20c989d12bc5ccce127a9b9854cbcede6625",
     "parts": 1
   },
+  "tvoj-tvoja-tvoje.mp3": {
+    "size": 20352,
+    "sha256": "1db3dcedc78efdb9f8d69aa47337486f07a84b4e5031c8f7a31b61fdb706eb50",
+    "parts": 1
+  },
   "tvoj.mp3": {
     "size": 6336,
     "sha256": "44dcc775bf18a47d3c42ced0494d7002d631aba30d808d2c935edf8b869059d4",
     "parts": 1
   },
+  "uchim-srpski.mp3": {
+    "size": 11712,
+    "sha256": "44839d59853baa5331c5590bed96b831c622d8e08534b99cc66225496d376543",
+    "parts": 1
+  },
+  "ujak.mp3": {
+    "size": 6720,
+    "sha256": "c605f8e1f605719d6863f48bf9923b135f45fe6e23cee2981faaeab3435b6b87",
+    "parts": 1
+  },
+  "ujna.mp3": {
+    "size": 7104,
+    "sha256": "d73f0bea8a9010be4876373d0a0d93d12f434388d437356eeab0fbeec12460aa",
+    "parts": 1
+  },
   "ulica.mp3": {
     "size": 7872,
     "sha256": "0a0e0cc73b7dc875a54bb1fd48fcc4a12d7b6a06da4af713e177ed172b85dcef",
+    "parts": 1
+  },
+  "umoran.mp3": {
+    "size": 7296,
+    "sha256": "a069d851d55764705fcd4aa5b63104a9137b504f645b9201bad4d80e56d3d3cf",
+    "parts": 1
+  },
+  "umorna.mp3": {
+    "size": 7488,
+    "sha256": "dc05d745e5a6e4a0ace85d96988bc845af099b2c51167ac430b25f194c3d94b5",
     "parts": 1
   },
   "vajar.mp3": {
@@ -434,9 +589,24 @@
     "sha256": "56d7266e19438c8e9eda426e4bf06689ec2823ca12a6ba500467310a2895491a",
     "parts": 1
   },
+  "zdravo.mp3": {
+    "size": 8064,
+    "sha256": "0e57d5943d064419de7a20ce59a53fe1e92a6fa2791e2c1f5eb1e4044e6b2897",
+    "parts": 1
+  },
+  "zgrada.mp3": {
+    "size": 8256,
+    "sha256": "2151bde4a03004ce3700c5069c24e6f4444d96604b152687a709dfef92b83bd7",
+    "parts": 1
+  },
   "zhaba.mp3": {
     "size": 7488,
     "sha256": "ba1574fdd8c993503a5a0f634bd6c10c965ff9428975135984b2c8c65a843bba",
+    "parts": 1
+  },
+  "zovem-se.mp3": {
+    "size": 9600,
+    "sha256": "a8b17754694109ab0d940123488e262c223684a12ecfe645ef5bfa97a048a950",
     "parts": 1
   },
   "zub.mp3": {
