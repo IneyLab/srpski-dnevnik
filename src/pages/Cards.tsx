@@ -79,7 +79,7 @@ function Flashcard({ card, onGrade }: { card: Card; onGrade: (grade: Grade) => v
     .join(' · ')
 
   return (
-    <section className={`${g.sheet} ${g.flash}`} aria-label="Карточка">
+    <section className={`${g.sheet} ${g.flash}`} aria-label="Карточка" data-no-gloss>
       <p className={g.flashMeta}>
         {DIR_LABEL[card.dir]} · неделя {card.week || '—'}
         {card.fromMistake && (

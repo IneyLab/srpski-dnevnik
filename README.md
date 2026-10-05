@@ -36,7 +36,8 @@ src/
     course.ts       оглавление 13 недель (недели без папки показываются как «скоро»)
     sources.ts      источники заданий: подпись «(c) Go-Serbia» со ссылкой на урок
     registry.ts     автоматически находит недели в content/weeks/NN
-    weeks/NN/       week.ts (мета), vocab.ts, exercises.ts, s1…s6.mdx, checkin.mdx
+    weeks/NN/       week.ts (мета), vocab.ts, glossary.ts, exercises.ts, s1…s6.mdx, checkin.mdx
+    dictionary.ts   словарь подсказки по двойному щелчку: vocab.ts + места на карте + glossary.ts
     cheatsheets/    шпаргалки (MDX с export const meta)
     checkpoints/    контрольные точки N.mdx (появляются на неделях 4, 8, 13)
     pages/          ресурсы
@@ -63,8 +64,9 @@ scripts/                  split-audio.mjs / join-audio.mjs / tts.mjs (озвуч
 1. Создай папку `src/content/weeks/NN/` (по образцу `01`).
 2. `week.ts` — тема, цели «я могу…», грамматика, лексика, культура, задача, список занятий.
 3. `vocab.ts` — словарик (поле `lesson` указывает занятие; `falseFriend` — ложный друг).
-4. `exercises.ts` — упражнения со стабильными `id` вида `wN.sM.name`; у взятых из источника — `source`.
-5. `s1.mdx … s6.mdx`, `checkin.mdx` — тексты занятий.
+4. `glossary.ts` — переводы словоформ из текстов недели для подсказки по двойному щелчку (строка вида `'зовем = зову | звати се'`). Слова из `vocab.ts` попадают туда сами; тест покажет, каких слов не хватает.
+5. `exercises.ts` — упражнения со стабильными `id` вида `wN.sM.name`; у взятых из источника — `source`.
+6. `s1.mdx … s6.mdx`, `checkin.mdx` — тексты занятий.
 
 Код менять не нужно. `npm test` проверит, что все `<Exercise id>` и аудиофайлы на месте, а предложения в «собери предложение» собираются из выданных слов.
 
@@ -83,6 +85,7 @@ scripts/                  split-audio.mjs / join-audio.mjs / tts.mjs (озвуч
 - Формы по роду ученика: в MDX `<G f="уморна" m="уморан" />` (сербский) и `<Ru f="сама" m="сам" />` (русский); в данных — `{ f: '…', m: '…' }`.
 - Шаблоны в `<ChatBlock template={…}>`: `[[женская|мужская]]`, `{{сербский текст}}`, `((если кириллица|если латиница))`.
 - Компоненты MDX: `Audio` (`source` — подпись источника), `Video` (youtube-nocookie, загрузка по клику, `author` — автор/канал), `Exercise`, `Vocab`, `ChatBlock` (report / ai / people; у `ai` обязателен `skill`: reading / writing / listening / speaking), `Source` (подпись «(c) …» внизу блока), `RepeatAfter` (повтори за диктором, озвучка Google Переводчика), `MiniLesson`, `Trap`, `Culture`, `Tip`, `Dialogue`, `AlphabetTable`, `NewLetters`.
+- **Перевод по двойному щелчку** (`components/sr/WordGloss.tsx`): на любом сербском слове (`lang="sr"`) всплывает перевод из `content/dictionary.ts`. В упражнениях и карточках слов отключён (`data-no-gloss`): там перевод — это ответ.
 - Источник задания — только мелкой подписью внизу (`source` в упражнении, `<Source id>` в MDX), не в заголовке. Задания нумеруются автоматически в рамках занятия.
 - Каждую внешнюю ссылку и ID видео проверяем до вставки.
 

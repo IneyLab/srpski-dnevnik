@@ -7,6 +7,7 @@ import { isStorageAvailable } from '../../lib/storage'
 import { toScript } from '../../lib/translit'
 import { VisitorCounter } from './VisitorCounter'
 import { Sr } from '../sr/Sr'
+import { WordGloss } from '../sr/WordGloss'
 
 const THEME_NEXT: Record<ThemePref, ThemePref> = { system: 'light', light: 'dark', dark: 'system' }
 const THEME_LABEL: Record<ThemePref, string> = { system: 'Системная', light: 'Светлая', dark: 'Тёмная' }
@@ -180,6 +181,7 @@ export function Layout({ children, wide }: { children: ReactNode; wide?: boolean
       </main>
       <Footer />
       <GenderDialog />
+      <WordGloss />
     </div>
   )
 }

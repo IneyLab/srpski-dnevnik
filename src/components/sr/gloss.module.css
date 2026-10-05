@@ -1,0 +1,29 @@
+/* Подсказка с переводом по двойному щелчку на сербском слове */
+.gloss {
+  position: fixed;
+  z-index: 50;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 8px 12px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.word {
+  font-weight: 600;
+}
+.base {
+  color: var(--ink-soft);
+}
+.ru {
+  display: block;
+}
+.note {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 0.875em;
+}

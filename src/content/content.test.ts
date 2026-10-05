@@ -9,6 +9,8 @@ import { tokensOf } from '../components/exercises/Build'
 import { normalize } from '../lib/answer'
 import { SOURCES } from './sources'
 import { splitWords, ttsSlug, TTS_DIR } from '../lib/tts'
+import { DICTIONARY, GLOSSARY_ERRORS } from './dictionary'
+import { wordsOf } from '../lib/glossary'
 
 const root = join(__dirname, '..', '..')
 const weeksDir = join(__dirname, 'weeks')
@@ -214,5 +216,51 @@ describe('игровые данные: места, значки, блоки «В
       const titles = [...readFileSync(file, 'utf8').matchAll(/<ChatBlock[^>]*?\stitle="([^"]+)"/g)].map((m) => m[1])
       expect(new Set(titles).size, file).toBe(titles.length)
     }
+  })
+})
+
+describe('перевод по двойному щелчку', () => {
+  // Сербский текст, который видит ученик: `обратные кавычки`, <Sr>…</Sr>, <G f m>, <RepeatAfter words>.
+  const serbianIn = (text: string) => [
+    ...[...text.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]),
+    ...[...text.matchAll(/<Sr\b[^>]*>([\s\S]*?)<\/Sr>/g)].map((m) => m[1]),
+    ...[...text.matchAll(/<G f="([^"]+)" m="([^"]+)"/g)].flatMap((m) => [m[1], m[2]]),
+    ...[...text.matchAll(/<RepeatAfter[^>]*?\swords="([^"]+)"/g)].map((m) => m[1]),
+    // <Dialogue lines={[['кто', 'реплика', 'перевод'], …]}> — кто и реплика по-сербски
+    ...[...text.matchAll(/<Dialogue[\s\S]*?\/>/g)].flatMap((d) => [...d[0].matchAll(/\[\s*'([^']*)',\s*'([^']*)'/g)].flatMap((m) => [m[1], m[2]])),
+  ]
+  // В .ts-файлах — только строки, без комментариев (там `кавычки` бывают и в русском тексте)
+  const withoutComments = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  const dirFiles = (dir: string, ext: string) =>
+    existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith(ext)).map((f) => join(dir, f)) : []
+
+  it('глоссарии недель разбираются без ошибок', () => {
+    expect(GLOSSARY_ERRORS).toEqual([])
+  })
+
+  it('для каждого сербского слова в занятиях, шпаргалках, на карте и в значках есть перевод', () => {
+    const files = [
+      ...mdxFiles,
+      ...['cheatsheets', 'checkpoints', 'pages'].flatMap((d) => dirFiles(join(__dirname, d), '.mdx')),
+      ...readdirSync(weeksDir).map((w) => join(weeksDir, w, 'week.ts')),
+      join(__dirname, 'course.ts'),
+      join(__dirname, 'places.ts'),
+      join(__dirname, 'badges.ts'),
+    ]
+    const missing = new Set<string>()
+    for (const file of files) {
+      const text = file.endsWith('.ts') ? withoutComments(readFileSync(file, 'utf8')) : readFileSync(file, 'utf8')
+      for (const frag of serbianIn(text)) {
+        // Однобуквенные — это буквы алфавита («ч / ћ»), а не слова
+        for (const w of wordsOf(frag)) if (w.length > 1 && !DICTIONARY[w]) missing.add(`${w} (${file.split('/src/')[1]})`)
+      }
+    }
+    expect([...missing], 'добавь слова в weeks/NN/glossary.ts').toEqual([])
+  })
+
+  it('слова из словариков недель есть в подсказке', () => {
+    expect(DICTIONARY['стан']?.ru).toBe('квартира')
+    expect(DICTIONARY['уморан']).toBeDefined()
+    expect(DICTIONARY['моја']?.ru).toBe('мой, моя, моё')
   })
 })
