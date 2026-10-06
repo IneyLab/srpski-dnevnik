@@ -11,7 +11,7 @@ export type LessonKind = 'input' | 'practice' | 'task' | 'listening' | 'product'
 export interface LessonMeta {
   /** Часть адреса: /week/1/lesson/<slug> */
   slug: string
-  /** С1…С6, «Чек-ин» */
+  /** «Урок 1»…«Урок 6», «Чек-ин» */
   code: string
   title: string
   kind: LessonKind

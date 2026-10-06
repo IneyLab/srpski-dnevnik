@@ -23,7 +23,7 @@ export function unlockHint(p: Place): string {
     if ('lesson' in u) {
       const m = u.lesson.match(/^w(\d+)\.(s(\d+)|checkin)$/)
       if (!m) return u.lesson
-      return m[3] ? `занятие С${m[3]} недели ${m[1]}` : `чек-ин недели ${m[1]}`
+      return m[3] ? `урок ${m[3]} недели ${m[1]}` : `чек-ин недели ${m[1]}`
     }
     return `неделя ${u.week} целиком`
   })

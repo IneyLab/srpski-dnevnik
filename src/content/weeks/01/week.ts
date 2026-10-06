@@ -23,7 +23,7 @@ const week: WeekMeta = {
   lessons: [
     {
       slug: '1',
-      code: 'С1',
+      code: 'Урок 1',
       title: 'Два алфавита и шесть «новых» букв',
       kind: 'input',
       minutes: '40–60',
@@ -32,7 +32,7 @@ const week: WeekMeta = {
     },
     {
       slug: '2',
-      code: 'С2',
+      code: 'Урок 2',
       title: 'Род, указательные слова и знакомство',
       kind: 'practice',
       minutes: '40–60',
@@ -41,7 +41,7 @@ const week: WeekMeta = {
     },
     {
       slug: '3',
-      code: 'С3',
+      code: 'Урок 3',
       title: 'Задача: карточка персонажа',
       kind: 'task',
       minutes: '30–45',
@@ -50,7 +50,7 @@ const week: WeekMeta = {
     },
     {
       slug: '4',
-      code: 'С4',
+      code: 'Урок 4',
       title: 'Аудирование, «тень» и Вук Караджич',
       kind: 'listening',
       minutes: '30–45',
@@ -59,7 +59,7 @@ const week: WeekMeta = {
     },
     {
       slug: '5',
-      code: 'С5',
+      code: 'Урок 5',
       title: 'Продукт недели: карточка на проверку',
       kind: 'product',
       minutes: '30–45',
@@ -68,7 +68,7 @@ const week: WeekMeta = {
     },
     {
       slug: '6',
-      code: 'С6',
+      code: 'Урок 6',
       title: 'Два алфавита вокруг нас',
       kind: 'people',
       minutes: '30–60',

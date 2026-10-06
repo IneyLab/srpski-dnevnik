@@ -64,7 +64,7 @@ describe('содержание недель', () => {
     for (const l of ALPHABET) expect(ttsExists(l.ex), `алфавит: ${l.ex}`).toBe(true)
   })
 
-  it('в занятии С1 недели 1 нет словаря: слова начинаются со С2', () => {
+  it('в уроке 1 недели 1 нет словаря: слова начинаются с урока 2', () => {
     expect(readFileSync(join(weeksDir, '01', 's1.mdx'), 'utf8')).not.toContain('<Vocab')
     expect(VOCAB[1].some((v) => v.lesson === 's1')).toBe(false)
   })

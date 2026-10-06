@@ -1,10 +1,11 @@
-import { lazy, Suspense, useMemo, type ComponentType } from 'react'
+import { Suspense, type ComponentType } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { MDXProvider } from '@mdx-js/react'
 import s from './pages.module.css'
 import { mdxComponents } from '../components/mdx'
 import { COURSE } from '../content/course'
 import NotFound from './NotFound'
+import { lazyOnce } from '../lib/lazyOnce'
 
 type Loader = () => Promise<{ default: ComponentType; title?: string; order?: number; summary?: string }>
 
@@ -23,7 +24,7 @@ const pageLoaders = import.meta.glob('../content/pages/*.mdx') as Record<string,
 const slugOf = (path: string) => path.split('/').pop()!.replace('.mdx', '')
 
 function MdxContent({ loader }: { loader: Loader }) {
-  const Content = useMemo(() => lazy(loader), [loader])
+  const Content = lazyOnce(loader)
   return (
     <MDXProvider components={mdxComponents}>
       <Suspense fallback={<p>Загружаю…</p>}>

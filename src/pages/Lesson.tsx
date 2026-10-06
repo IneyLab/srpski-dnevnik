@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { MDXProvider } from '@mdx-js/react'
 import s from './pages.module.css'
@@ -10,6 +10,7 @@ import { WEEKS, lessonId, lessonLoader } from '../content/registry'
 import type { Skill } from '../lib/xp'
 import NotFound from './NotFound'
 import { Rich } from '../components/sr/Rich'
+import { lazyOnce } from '../lib/lazyOnce'
 import { LessonContext } from '../components/content/LessonContext'
 
 function LessonDone({ id, skill }: { id: string; skill?: Skill }) {
@@ -50,7 +51,7 @@ export default function Lesson() {
   const idx = week?.lessons.findIndex((l) => l.slug === slug) ?? -1
   const meta = idx >= 0 ? week.lessons[idx] : undefined
   const loader = lessonLoader(n, slug)
-  const Content = useMemo(() => (loader ? lazy(loader) : null), [loader])
+  const Content = loader ? lazyOnce(loader) : null
   const setLastVisited = useApp((st) => st.setLastVisited)
   const { pathname } = useLocation()
   const lessonCtx = useMemo(() => (meta ? { id: lessonId(n, slug), kind: meta.kind } : null), [meta, n, slug])

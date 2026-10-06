@@ -36,6 +36,6 @@ describe('открытие мест на карте', () => {
     const p = place([{ lesson: 'w1.s6' }, { week: 1 }])
     expect(isPlaceOpen(p, { 'w1.s6': { done: true } }, required)).toBe(true)
     expect(isPlaceOpen(p, { 'w1.s1': { done: true }, 'w1.s2': { done: true } }, required)).toBe(true)
-    expect(unlockHint(p)).toBe('Откроется: занятие С6 недели 1 или неделя 1 целиком')
+    expect(unlockHint(p)).toBe('Откроется: урок 6 недели 1 или неделя 1 целиком')
   })
 })
